@@ -1,0 +1,9 @@
+[gd_scene load_steps=2 format=3 uid="uid://iee87nwjkm1e"]
+
+[ext_resource type="Script" path="res://_scenes/Player/Player.gd" id="1_vlnco"]
+
+[node name="Player" type="RigidBody2D"]
+script = ExtResource("1_vlnco")
+
+[node name="CollisionShape2D" type="CollisionPolygon2D" parent="."]
+polygon = PackedVector2Array(0, -30, 15, 0, -15, 0)
