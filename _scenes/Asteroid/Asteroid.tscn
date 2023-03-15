@@ -1,10 +1,19 @@
-[gd_scene load_steps=2 format=3 uid="uid://cyl2t3o84n8nj"]
+[gd_scene load_steps=3 format=3 uid="uid://cf15nqu68n0ct"]
 
 [ext_resource type="Script" path="res://_scenes/Asteroid/Asteroid.gd" id="1_t1vh1"]
 
-[node name="Asteroid" type="RigidBody2D"]
+[sub_resource type="CircleShape2D" id="CircleShape2D_5d1jn"]
+radius = 14.0
+
+[node name="Asteroid" type="Area2D" groups=["asteroid"]]
 script = ExtResource("1_t1vh1")
 
-[node name="CollisionPolygon2D" type="CollisionPolygon2D" parent="."]
+[node name="CollisionShape2D" type="CollisionShape2D" parent="."]
+shape = SubResource("CircleShape2D_5d1jn")
 
 [node name="Polygon2D" type="Polygon2D" parent="."]
+position = Vector2(1, 0)
+polygon = PackedVector2Array(-13, -7, -13, 7, -7, 13, 2, 13, 11, 7, 8, 0, 11, -7, 5, -12, -1, -7, -5, -13)
+
+[connection signal="area_entered" from="." to="." method="_on_asteroid_area_entered"]
+[connection signal="body_entered" from="." to="." method="_on_asteroid_body_entered"]

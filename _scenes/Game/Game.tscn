@@ -1,6 +1,9 @@
-[gd_scene load_steps=2 format=3 uid="uid://dh7soawunrkac"]
+[gd_scene load_steps=2 format=3 uid="uid://bm7o5d8v5ttm1"]
 
 [ext_resource type="Script" path="res://_scenes/Game/Game.gd" id="1_rnyc1"]
 
-[node name="Game" type="Node"]
+[node name="Game" type="Node2D" groups=["level"]]
 script = ExtResource("1_rnyc1")
+
+[node name="PlayerSpawn" type="Node2D" parent="."]
+position = Vector2(512, 384)

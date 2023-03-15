@@ -2,8 +2,17 @@
 
 [ext_resource type="Script" path="res://_scenes/Player/Player.gd" id="1_vlnco"]
 
-[node name="Player" type="RigidBody2D"]
+[node name="Player" type="CharacterBody2D" groups=["player"]]
 script = ExtResource("1_vlnco")
+decel = 0.8
+accel = 0.7
 
 [node name="CollisionShape2D" type="CollisionPolygon2D" parent="."]
-polygon = PackedVector2Array(0, -30, 15, 0, -15, 0)
+position = Vector2(0, 13)
+polygon = PackedVector2Array(0, -30, 12, 3, -12, 3)
+
+[node name="Polygon2D" type="Polygon2D" parent="."]
+polygon = PackedVector2Array(0, -17, -12, 16, 0, 12, 12, 16)
+
+[node name="Gun" type="Node2D" parent="."]
+position = Vector2(0, -21)
