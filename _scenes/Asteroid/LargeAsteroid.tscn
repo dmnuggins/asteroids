@@ -1,0 +1,19 @@
+[gd_scene load_steps=3 format=3 uid="uid://b6he43ij7sodk"]
+
+[ext_resource type="Script" path="res://_scenes/Asteroid/Asteroid.gd" id="1_6p3lj"]
+
+[sub_resource type="CircleShape2D" id="CircleShape2D_owben"]
+radius = 128.0
+
+[node name="LargeAsteroid" type="Area2D" groups=["asteroid"]]
+script = ExtResource("1_6p3lj")
+size = 3
+value = 20
+
+[node name="LrgAstCollider" type="CollisionShape2D" parent="."]
+shape = SubResource("CircleShape2D_owben")
+
+[node name="Polygon2D" type="Polygon2D" parent="."]
+polygon = PackedVector2Array(-136, -16, -80, 104, -32, 128, 40, 112, 120, 72, 128, -32, 112, -64, 64, -88, 40, -104, 16, -128, -64, -120, -96, -64)
+
+[connection signal="body_entered" from="." to="." method="_on_asteroid_body_entered"]

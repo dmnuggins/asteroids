@@ -26,6 +26,7 @@ func screen_wrap() -> void:
 
 func set_invader_projectile() -> void:
 	invader_projectile = true
+	$ColorRect.color = Color(1, 0, 0, 1)
 
 func destroy_bullet() -> void:
 	emit_signal("bullet_destroyed")

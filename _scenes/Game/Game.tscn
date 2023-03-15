@@ -1,6 +1,9 @@
-[gd_scene load_steps=2 format=3 uid="uid://bm7o5d8v5ttm1"]
+[gd_scene load_steps=3 format=3 uid="uid://bm7o5d8v5ttm1"]
 
 [ext_resource type="Script" path="res://_scenes/Game/Game.gd" id="1_rnyc1"]
+
+[sub_resource type="RectangleShape2D" id="RectangleShape2D_v3gsg"]
+size = Vector2(64, 64)
 
 [node name="Game" type="Node2D" groups=["level"]]
 script = ExtResource("1_rnyc1")
@@ -13,3 +16,11 @@ layout_mode = 3
 anchors_preset = 0
 offset_right = 40.0
 offset_bottom = 40.0
+
+[node name="PlayerSpawnZone" type="Area2D" parent="."]
+position = Vector2(512, 384)
+metadata/_edit_group_ = true
+
+[node name="CollisionShape2D" type="CollisionShape2D" parent="PlayerSpawnZone"]
+shape = SubResource("RectangleShape2D_v3gsg")
+metadata/_edit_group_ = true

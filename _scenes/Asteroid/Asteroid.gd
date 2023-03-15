@@ -1,8 +1,10 @@
 extends Area2D
 
+@export var size: int = 0
+@export var value: int = 0
+
 @onready var screen_size = get_viewport_rect().size
 
-var size # 1, 2, 3 (large, medium, small)
 var velocity = Vector2.ZERO
 
 signal asteroid_split
@@ -18,13 +20,15 @@ func _process(delta) -> void:
 	screen_wrap()
 	
 
+func get_asteroid_size() -> int:
+	return size
+
 func break_asteroid() -> void:
-	emit_signal("asteroid_split")
-	queue_free()
+	emit_signal("asteroid_split", size, velocity, global_position, value)
 	# split the asteroid in 2
 	# check size of the asteroid
 	# shrink the current one and add a medium as child?
-	GameManager.handle_asteroid_destruction()
+	queue_free()
 
 func screen_wrap() -> void:
 	position = position.posmodv(screen_size)

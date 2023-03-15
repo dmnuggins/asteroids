@@ -18,7 +18,6 @@ offset_bottom = 15.0
 shape = SubResource("RectangleShape2D_l0s1t")
 
 [node name="ShootTimer" type="Timer" parent="."]
-autostart = true
 
 [connection signal="body_entered" from="." to="." method="_on_flying_saucer_body_entered"]
 [connection signal="timeout" from="ShootTimer" to="." method="_on_shoot_timer_timeout"]

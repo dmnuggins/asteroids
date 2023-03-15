@@ -3,17 +3,19 @@
 [ext_resource type="Script" path="res://_scenes/Asteroid/Asteroid.gd" id="1_t1vh1"]
 
 [sub_resource type="CircleShape2D" id="CircleShape2D_5d1jn"]
-radius = 14.0
+radius = 15.0
 
 [node name="Asteroid" type="Area2D" groups=["asteroid"]]
 script = ExtResource("1_t1vh1")
+size = 1
+value = 100
 
 [node name="CollisionShape2D" type="CollisionShape2D" parent="."]
 shape = SubResource("CircleShape2D_5d1jn")
 
 [node name="Polygon2D" type="Polygon2D" parent="."]
 position = Vector2(1, 0)
-polygon = PackedVector2Array(-13, -7, -13, 7, -7, 13, 2, 13, 11, 7, 8, 0, 11, -7, 5, -12, -1, -7, -5, -13)
+polygon = PackedVector2Array(-14, -8, -14, 7, -7, 14, 3, 14, 12, 8, 9, 0, 12, -7, 6, -13, -1, -8, -5, -14)
 
 [connection signal="area_entered" from="." to="." method="_on_asteroid_area_entered"]
 [connection signal="body_entered" from="." to="." method="_on_asteroid_body_entered"]
