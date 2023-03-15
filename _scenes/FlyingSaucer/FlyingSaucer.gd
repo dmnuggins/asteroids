@@ -8,6 +8,7 @@ var velocity := Vector2.ZERO
 var value
 
 signal saucer_hit
+signal saucer_shoot
 
 # Called when the node enters the scene tree for the first time.
 func _ready():
@@ -41,3 +42,8 @@ func _on_flying_saucer_body_entered(body):
 		print("BONUS HIT: player")
 		destroy_saucer()
 		body.destroy_player() # Player
+
+
+func _on_shoot_timer_timeout():
+	emit_signal("saucer_shoot")
+	pass # Replace with function body.

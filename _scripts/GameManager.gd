@@ -3,6 +3,7 @@ extends Node
 @onready var asteroid_scene: PackedScene = load("res://_scenes/Asteroid/Asteroid.tscn")
 @onready var player_prefab: PackedScene = load("res://_scenes/Player/Player.tscn")
 @onready var bonus_prefab: PackedScene = load("res://_scenes/FlyingSaucer/FlyingSaucer.tscn")
+@onready var bullet_prefab: PackedScene = preload("res://_scenes/Bullet/Bullet.tscn")
 
 # General vars
 var wave: int = 1
@@ -63,7 +64,7 @@ func bonus_spawn_timer() -> void:
 	bonus_timer. one_shot = true
 	bonus_timer.start()
 	bonus_timer.timeout.connect(spawn_bonus) # bonus spawner is called when bonus_timer timeout
-	
+
 #=====TIMERS END=====#
 
 #func handle_next_wave() -> void:
@@ -99,8 +100,21 @@ func spawn_bonus() -> void:
 	bonus.global_position = random_position()
 	level.add_child(bonus)
 	bonus_spawned = true
+	bonus.saucer_shoot.connect(bonus_shoot)
 	
 #=====SPAWNERS END=====#
+
+# shoots bullet from saucer when called
+func bonus_shoot() -> void:
+	var sauce_bullet = bullet_prefab.instantiate()
+	# position init
+	sauce_bullet.position = bonus.position
+	if player != null:
+		sauce_bullet.look_at(player.global_position)
+	# rotation init
+	sauce_bullet.set_invader_projectile()
+	level.add_child(sauce_bullet)
+	pass
 
 #=====DESTRUCTION=====#
 
