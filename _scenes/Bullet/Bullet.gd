@@ -5,7 +5,7 @@ extends Area2D
 @onready var screen_size = get_viewport_rect().size
 
 # flag for determining if bullet belongs to bonus ship or player
-var invader_projectile: bool
+var invader_projectile: bool = false
 
 signal asteroid_hit
 signal player_hit
@@ -27,13 +27,17 @@ func screen_wrap() -> void:
 func set_invader_projectile() -> void:
 	invader_projectile = true
 
+func destroy_bullet() -> void:
+	emit_signal("bullet_destroyed")
+	queue_free()
+
 #=====SIGNALS=====#
 
 func _on_timer_timeout():
 	queue_free()
 
 func _on_bullet_area_entered(area):
-	if area.is_in_group("asteroid"):
+	if !invader_projectile && area.is_in_group("asteroid"):
 		emit_signal("asteroid_hit")
 		area.break_asteroid()
 		print("BULLET HIT: asteroid")
@@ -50,6 +54,8 @@ func _on_bullet_area_entered(area):
 		print("BULLET HIT: bonus")
 		destroy_bullet()
 
-func destroy_bullet() -> void:
-	emit_signal("bullet_destroyed")
-	queue_free()
+func _on_bullet_body_entered(body):
+	if invader_projectile && body.is_in_group("player"):
+		emit_signal("player_hit")
+		print("BULLET HIT: player")
+		body.destroy_player()

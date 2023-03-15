@@ -20,14 +20,3 @@ func player_shoot() -> void:
 	new_bullet.position = GameManager.player.get_gun_position() 
 	new_bullet.rotation = GameManager.player.rotation
 	add_child(new_bullet)
-
-# shoots bullet from saucer when called
-func saucer_shoot() -> void:
-	var sauce_bullet = bullet_prefab.instantiate()
-	# position init
-	sauce_bullet.position = GameManager.bonus.position
-	sauce_bullet.look_at(GameManager.player.position)
-	# rotation init
-	sauce_bullet.set_invader_projectile()
-	add_child(sauce_bullet)
-	pass

@@ -60,7 +60,7 @@ func bonus_spawn_timer() -> void:
 	bonus_spawned = true
 	bonus_timer = Timer.new()
 	add_child(bonus_timer)
-	bonus_timer.wait_time = 5.0
+	bonus_timer.wait_time = 1.0
 	bonus_timer. one_shot = true
 	bonus_timer.start()
 	bonus_timer.timeout.connect(spawn_bonus) # bonus spawner is called when bonus_timer timeout
@@ -111,6 +111,10 @@ func bonus_shoot() -> void:
 	sauce_bullet.position = bonus.position
 	if player != null:
 		sauce_bullet.look_at(player.global_position)
+		sauce_bullet.rotate(PI/2) # rotation accounted for initial launch vector of bullet
+		var rand_ang = random_angle()
+		sauce_bullet.rotate(rand_ang)
+		print("Randome angle: ", rand_ang)
 	# rotation init
 	sauce_bullet.set_invader_projectile()
 	level.add_child(sauce_bullet)
@@ -132,5 +136,8 @@ func handle_bonus_destruction() -> void:
 func random_position() -> Vector2:
 	randomize()
 	# get random position vector
-	var rand_v = Vector2(randf_range(0,1024) , randf_range(0,768))
-	return rand_v
+	return Vector2(randf_range(0,1024) , randf_range(0,768))
+
+func random_angle():
+	randomize()
+	return randf_range(-PI/8, PI/8)
