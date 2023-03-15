@@ -1,0 +1,22 @@
+[gd_scene load_steps=3 format=3 uid="uid://dkk4xuh7t85xq"]
+
+[ext_resource type="Script" path="res://_scenes/FlyingSaucer/FlyingSaucer.gd" id="1_dj38u"]
+
+[sub_resource type="RectangleShape2D" id="RectangleShape2D_l0s1t"]
+size = Vector2(60, 30)
+
+[node name="FlyingSaucer" type="Area2D" groups=["bonus"]]
+script = ExtResource("1_dj38u")
+
+[node name="ColorRect" type="ColorRect" parent="."]
+offset_left = -30.0
+offset_top = -15.0
+offset_right = 30.0
+offset_bottom = 15.0
+
+[node name="SaucerCollider" type="CollisionShape2D" parent="."]
+shape = SubResource("RectangleShape2D_l0s1t")
+
+[node name="ShootTimer" type="Timer" parent="."]
+
+[connection signal="body_entered" from="." to="." method="_on_flying_saucer_body_entered"]

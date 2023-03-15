@@ -12,8 +12,10 @@ func _physics_process(delta):
 	
 	if Input.is_action_just_pressed("shoot"):
 		# shoots bullets
-		var new_bullet = bullet_prefab.instantiate()
-		new_bullet.position = GameManager.player.get_gun_position() 
-		new_bullet.rotation = GameManager.player.rotation
-		add_child(new_bullet)
-	pass
+		if GameManager.player != null: # checks if player exists
+			var new_bullet = bullet_prefab.instantiate()
+			new_bullet.position = GameManager.player.get_gun_position() 
+			new_bullet.rotation = GameManager.player.rotation
+			add_child(new_bullet)
+	
+	

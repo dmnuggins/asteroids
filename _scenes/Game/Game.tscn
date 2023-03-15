@@ -7,3 +7,9 @@ script = ExtResource("1_rnyc1")
 
 [node name="PlayerSpawn" type="Node2D" parent="."]
 position = Vector2(512, 384)
+
+[node name="UI" type="Control" parent="."]
+layout_mode = 3
+anchors_preset = 0
+offset_right = 40.0
+offset_bottom = 40.0
