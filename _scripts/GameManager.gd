@@ -1,3 +1,5 @@
+# Singelton script loader
+
 extends Node
 
 @onready var sml_asteroid_scene: PackedScene = load("res://_scenes/Asteroid/Asteroid.tscn")
@@ -7,6 +9,9 @@ extends Node
 @onready var bonus_prefab: PackedScene = load("res://_scenes/FlyingSaucer/FlyingSaucer.tscn")
 @onready var bullet_prefab: PackedScene = preload("res://_scenes/Bullet/Bullet.tscn")
 
+# Bound check vars
+
+
 # General vars
 var score: int = 0
 var wave: int = 1
@@ -14,6 +19,8 @@ var asteroids_remaining: int = 4
 var spawn_count: int = 0
 var bonus_spawned: bool = false
 var level: Node2D
+var spawn_path
+var spawn_follow_path
 var spawn_timer: Timer
 var respawn_timer: Timer
 var time_between_spawns: float = 1.0
@@ -36,17 +43,13 @@ signal last_asteroid_destroyed
 
 func _ready():
 	level = get_tree().get_first_node_in_group("level")
-#	asteroid_spawns = get_tree().get_nodes_in_group("asteroid_spawn")
-#	initialize_spawn_timer()
-#	spawn_bonus()
-
+	spawn_path = get_tree().get_first_node_in_group("spawn_path")
+	spawn_follow_path = spawn_path.get_child(0)
 	spawn_asteroids(3)
 	asteroids = get_tree().get_nodes_in_group("asteroid")
 	print(asteroids)
 	spawn_player()
-	connect_signals()
-
-#	connect_signals()
+	connect_signals() # connects signals for asteroids
 
 func _process(delta):
 	if !bonus_spawned:
@@ -121,6 +124,7 @@ func add_asteroids(position: Vector2) -> void:
 	asteroid.global_position = position
 	spawn_count += 1
 
+# splits asteroids into smaller asteroids given size and instances given velocity and position
 func split_asteroids(size: int, velocity: Vector2, ast_position: Vector2) -> void:
 	if size == 3:
 		for i in 2:
@@ -188,7 +192,9 @@ func handle_bonus_destruction() -> void:
 func random_position() -> Vector2:
 	randomize()
 	# get random position vector
-	return Vector2(randf_range(0,1024) , randf_range(0,768))
+	spawn_follow_path.progress_ratio = randf()
+#	Vector2(randf_range(0,1024) , randf_range(0,768))
+	return spawn_follow_path.position
 
 func random_angle():
 	randomize()

@@ -28,21 +28,19 @@ func _process(delta):
 func screen_wrap() -> void:
 	position = position.posmodv(screen_size)
 
-#=====SIGNALS=====#
-
 func destroy_saucer() -> void:
 	emit_signal("saucer_hit")
 	print("SAUCER: hit")
 	GameManager.handle_bonus_destruction()
 	queue_free()
 
+#=====CONNECTED FUNCTIONS=====#
 
 func _on_flying_saucer_body_entered(body):
 	if body.is_in_group("player"):
 		print("BONUS HIT: player")
 		destroy_saucer()
 		body.destroy_player() # Player
-
 
 func _on_shoot_timer_timeout():
 	emit_signal("saucer_shoot")

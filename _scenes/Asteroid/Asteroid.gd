@@ -33,7 +33,7 @@ func break_asteroid() -> void:
 func screen_wrap() -> void:
 	position = position.posmodv(screen_size)
 
-#=====SIGNALS=====#
+#=====CONNECTED FUNCTIONS=====#
 
 func _on_asteroid_body_entered(body):
 	if body.is_in_group("player"):

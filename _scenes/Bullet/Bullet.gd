@@ -32,7 +32,7 @@ func destroy_bullet() -> void:
 	emit_signal("bullet_destroyed")
 	queue_free()
 
-#=====SIGNALS=====#
+#=====CONNECTED FUNCTIONS=====#
 
 func _on_timer_timeout():
 	queue_free()
@@ -60,3 +60,4 @@ func _on_bullet_body_entered(body):
 		emit_signal("player_hit")
 		print("BULLET HIT: player")
 		body.destroy_player()
+		destroy_bullet()
