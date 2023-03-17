@@ -5,20 +5,37 @@ extends Area2D
 
 @onready var screen_size = get_viewport_rect().size
 
-var velocity = Vector2.ZERO
+var velocity := Vector2.ZERO
+var rotation_speed := 1
+var rotation_dir := 0.0
 
 signal asteroid_split
 # Called when the node enters the scene tree for the first time.
 func _ready():
-	randomize()
-	var x = randf_range(-100,100)
-	var y = randf_range(-100, 100)
-	velocity = Vector2(x,y)
+	if size == 3:
+		init_velocity()
+	set_random_rot_dir()
 
 func _process(delta) -> void:
 	position += velocity * delta
+	set_rotation(rotation + rotation_dir *  rotation_speed * delta)
 	screen_wrap()
-	
+
+# called when asteroid is split
+func split_velocity(new_velocity: Vector2):
+	velocity = new_velocity
+
+# initialize velocity for only largest asteroid size
+func init_velocity():
+	randomize()
+	var x = randf_range(-100,100)
+	var y = randf_range(-100,100)
+	velocity = Vector2(x,y)
+
+# should be called when initialized
+func set_random_rot_dir():
+	randomize()
+	rotation_dir = randf_range(-2,2)
 
 func get_asteroid_size() -> int:
 	return size

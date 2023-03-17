@@ -5,12 +5,14 @@ extends Node2D
 var rect
 var color
 
+signal can_spawn
+
 # Called when the node enters the scene tree for the first time.
 func _ready():
 #	GameManager.spawn_asteroids()
-	rect = [Rect2(Vector2(192,192),Vector2(640,384))] 
-	color = [Color(1.0,0.0,0.0),Color(0.0,0.0,1.0)]
-	_draw()
+#	rect = [Rect2(Vector2(192,192),Vector2(640,384))] 
+#	color = [Color(1.0,0.0,0.0),Color(0.0,0.0,1.0)]
+#	_draw()
 	pass # Replace with function body.
 
 # Called every frame. 'delta' is the elapsed time since the previous frame.
@@ -27,6 +29,12 @@ func player_shoot() -> void:
 	new_bullet.rotation = GameManager.player.rotation
 	add_child(new_bullet)
 
-func _draw(): 
-	for i in range(rect.size()): 
-		draw_rect(rect[i],color[i]) 
+func spawn_clear() -> bool:
+	if $PlayerZone.has_overlapping_areas():
+		return false
+	else:
+		return true
+
+#func _draw(): 
+#	for i in range(rect.size()): 
+#		draw_rect(rect[i],color[i]) 

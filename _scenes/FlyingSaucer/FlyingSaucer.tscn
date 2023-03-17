@@ -21,5 +21,17 @@ shape = SubResource("RectangleShape2D_l0s1t")
 wait_time = 1.5
 autostart = true
 
+[node name="LifeTimer" type="Timer" parent="."]
+wait_time = 15.0
+one_shot = true
+autostart = true
+
+[node name="DirTimer" type="Timer" parent="."]
+wait_time = 3.0
+autostart = true
+
+[connection signal="area_entered" from="." to="." method="_on_area_entered"]
 [connection signal="body_entered" from="." to="." method="_on_flying_saucer_body_entered"]
 [connection signal="timeout" from="ShootTimer" to="." method="_on_shoot_timer_timeout"]
+[connection signal="timeout" from="LifeTimer" to="." method="_on_life_timeout"]
+[connection signal="timeout" from="DirTimer" to="." method="_on_dir_timer_timeout"]

@@ -1,15 +1,27 @@
-[gd_scene load_steps=4 format=3 uid="uid://bm7o5d8v5ttm1"]
+[gd_scene load_steps=8 format=3 uid="uid://bm7o5d8v5ttm1"]
 
 [ext_resource type="Script" path="res://_scenes/Game/Game.gd" id="1_rnyc1"]
 
 [sub_resource type="RectangleShape2D" id="RectangleShape2D_i5xyd"]
-size = Vector2(640, 384)
+size = Vector2(256, 256)
 
 [sub_resource type="Curve2D" id="Curve2D_2r42g"]
 _data = {
 "points": PackedVector2Array(0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 1024, 0, 0, 0, 0, 0, 1024, 768, 0, 0, 0, 0, 0, 768, 0, 0, 0, 0, 0, 0)
 }
 point_count = 5
+
+[sub_resource type="RectangleShape2D" id="RectangleShape2D_yttpa"]
+size = Vector2(29, 768)
+
+[sub_resource type="RectangleShape2D" id="RectangleShape2D_ngxxt"]
+size = Vector2(1024, 24)
+
+[sub_resource type="RectangleShape2D" id="RectangleShape2D_g8j52"]
+size = Vector2(24, 769)
+
+[sub_resource type="RectangleShape2D" id="RectangleShape2D_nbnup"]
+size = Vector2(1024, 28)
 
 [node name="Game" type="Node2D" groups=["level"]]
 script = ExtResource("1_rnyc1")
@@ -20,13 +32,14 @@ position = Vector2(512, 384)
 [node name="UI" type="Control" parent="."]
 layout_mode = 3
 anchors_preset = 0
-offset_right = 40.0
-offset_bottom = 40.0
+offset_left = 80.0
+offset_top = 24.0
+offset_right = 936.0
+offset_bottom = 120.0
 
-[node name="Area2D" type="Area2D" parent="."]
-visible = false
+[node name="PlayerZone" type="Area2D" parent="."]
 
-[node name="CollisionShape2D" type="CollisionShape2D" parent="Area2D"]
+[node name="PlayerZoneCollider" type="CollisionShape2D" parent="PlayerZone"]
 position = Vector2(512, 384)
 shape = SubResource("RectangleShape2D_i5xyd")
 
@@ -34,3 +47,27 @@ shape = SubResource("RectangleShape2D_i5xyd")
 curve = SubResource("Curve2D_2r42g")
 
 [node name="AsteroidSpawnLocation" type="PathFollow2D" parent="AsteroidPath"]
+
+[node name="Area2D" type="Area2D" parent="." groups=["bounds"]]
+
+[node name="CollisionShape2D" type="CollisionShape2D" parent="Area2D"]
+position = Vector2(-14.5, 384)
+shape = SubResource("RectangleShape2D_yttpa")
+
+[node name="Area2D2" type="Area2D" parent="." groups=["bounds"]]
+
+[node name="CollisionShape2D" type="CollisionShape2D" parent="Area2D2"]
+position = Vector2(512, -12)
+shape = SubResource("RectangleShape2D_ngxxt")
+
+[node name="Area2D3" type="Area2D" parent="." groups=["bounds"]]
+
+[node name="CollisionShape2D" type="CollisionShape2D" parent="Area2D3"]
+position = Vector2(1036, 383.5)
+shape = SubResource("RectangleShape2D_g8j52")
+
+[node name="Area2D4" type="Area2D" parent="." groups=["bounds"]]
+
+[node name="CollisionShape2D" type="CollisionShape2D" parent="Area2D4"]
+position = Vector2(512, 782)
+shape = SubResource("RectangleShape2D_nbnup")

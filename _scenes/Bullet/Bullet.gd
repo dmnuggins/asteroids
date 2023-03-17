@@ -22,7 +22,6 @@ func _process(delta):
 # position exceeds screen border (x/y)
 func screen_wrap() -> void:
 	position = position.posmodv(screen_size)
-	
 
 func set_invader_projectile() -> void:
 	invader_projectile = true
@@ -41,23 +40,19 @@ func _on_bullet_area_entered(area):
 	if !invader_projectile && area.is_in_group("asteroid"):
 		emit_signal("asteroid_hit")
 		area.break_asteroid()
-		print("BULLET HIT: asteroid")
 		destroy_bullet()
 
 	if invader_projectile && area.is_in_group("player"):
 		emit_signal("player_hit")
-		print("BULLET HIT: player")
 		destroy_bullet()
 
 	if !invader_projectile && area.is_in_group("bonus"):
 		emit_signal("bonus_hit")
 		area.destroy_saucer()
-		print("BULLET HIT: bonus")
 		destroy_bullet()
 
 func _on_bullet_body_entered(body):
 	if invader_projectile && body.is_in_group("player"):
 		emit_signal("player_hit")
-		print("BULLET HIT: player")
 		body.destroy_player()
 		destroy_bullet()
