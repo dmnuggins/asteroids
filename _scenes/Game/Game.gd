@@ -30,7 +30,7 @@ func player_shoot() -> void:
 	add_child(new_bullet)
 
 func spawn_clear() -> bool:
-	if $PlayerZone.has_overlapping_areas():
+	if $PlayerSpawnZone.has_overlapping_areas():
 		return false
 	else:
 		return true

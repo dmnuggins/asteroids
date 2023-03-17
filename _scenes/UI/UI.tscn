@@ -1,12 +1,120 @@
-[gd_scene load_steps=2 format=3 uid="uid://d2v8dyn2lsrii"]
+[gd_scene load_steps=4 format=3 uid="uid://d2v8dyn2lsrii"]
 
-[ext_resource type="Script" path="res://_scenes/UI/UI.gd" id="1_5765d"]
+[ext_resource type="Script" path="res://_scenes/UI/UI.gd" id="1_0op8u"]
+[ext_resource type="Theme" uid="uid://dhir0viowmptm" path="res://_assets/themes/UI.tres" id="2_nnain"]
+[ext_resource type="Texture2D" uid="uid://di567tx33q3x5" path="res://_assets/images/asteroids_player_ship.png" id="3_awdpj"]
 
-[node name="UI" type="Control"]
+[node name="UI" type="CanvasLayer" groups=["ui"]]
+script = ExtResource("1_0op8u")
+
+[node name="TopScreen" type="Control" parent="."]
 layout_mode = 3
-anchors_preset = 15
-anchor_right = 1.0
-anchor_bottom = 1.0
-grow_horizontal = 2
-grow_vertical = 2
-script = ExtResource("1_5765d")
+anchors_preset = 0
+offset_right = 1024.0
+offset_bottom = 80.0
+theme = ExtResource("2_nnain")
+
+[node name="PlayerOne" type="Control" parent="TopScreen"]
+anchors_preset = 0
+offset_left = 192.0
+offset_right = 320.0
+offset_bottom = 40.0
+
+[node name="Score" type="Label" parent="TopScreen/PlayerOne"]
+layout_mode = 2
+offset_left = -64.0
+offset_right = 64.0
+offset_bottom = 39.0
+theme_override_font_sizes/font_size = 30
+text = "000"
+horizontal_alignment = 2
+
+[node name="NoLives" type="Label" parent="TopScreen/PlayerOne"]
+visible = false
+layout_mode = 0
+offset_left = -64.0
+offset_top = 48.0
+offset_right = 128.0
+offset_bottom = 80.0
+theme_override_font_sizes/font_size = 18
+text = "No Lives left"
+horizontal_alignment = 2
+
+[node name="Ships" type="TextureRect" parent="TopScreen/PlayerOne"]
+layout_mode = 2
+offset_left = -16.0
+offset_top = 48.0
+offset_right = 2.0
+offset_bottom = 80.0
+texture = ExtResource("3_awdpj")
+stretch_mode = 1
+flip_h = true
+
+[node name="PlayerTwo" type="Control" parent="TopScreen"]
+anchors_preset = 0
+offset_left = 704.0
+offset_right = 832.0
+offset_bottom = 40.0
+
+[node name="VBoxContainer" type="VBoxContainer" parent="TopScreen/PlayerTwo"]
+layout_mode = 0
+offset_right = 128.0
+offset_bottom = 40.0
+
+[node name="Score" type="Label" parent="TopScreen/PlayerTwo/VBoxContainer"]
+layout_mode = 2
+theme_override_font_sizes/font_size = 30
+text = "000"
+
+[node name="Lives" type="Label" parent="TopScreen/PlayerTwo/VBoxContainer"]
+layout_mode = 2
+text = "XXX"
+
+[node name="Highscore" type="Label" parent="TopScreen"]
+layout_mode = 0
+offset_left = 448.0
+offset_right = 576.0
+offset_bottom = 24.0
+theme_override_font_sizes/font_size = 20
+text = "000"
+horizontal_alignment = 1
+vertical_alignment = 1
+
+[node name="MidScreen" type="Control" parent="."]
+layout_mode = 3
+anchors_preset = 0
+offset_left = 320.0
+offset_top = 192.0
+offset_right = 704.0
+offset_bottom = 240.0
+size_flags_horizontal = 4
+size_flags_vertical = 4
+theme = ExtResource("2_nnain")
+
+[node name="PlayAgain" type="Button" parent="MidScreen"]
+layout_mode = 2
+offset_left = 64.0
+offset_top = -30.0
+offset_right = 320.0
+offset_bottom = -2.0
+text = "PLAY AGAIN?"
+flat = true
+
+[node name="Quit" type="Button" parent="MidScreen"]
+layout_mode = 2
+offset_left = 64.0
+offset_top = 2.0
+offset_right = 320.0
+offset_bottom = 30.0
+text = "QUIT"
+flat = true
+
+[node name="BotScreen" type="Control" parent="."]
+layout_mode = 3
+anchors_preset = 0
+offset_top = 704.0
+offset_right = 1024.0
+offset_bottom = 768.0
+
+[connection signal="pressed" from="MidScreen/PlayAgain" to="." method="_on_play_again_pressed"]
+[connection signal="pressed" from="MidScreen/Quit" to="." method="_on_quit_pressed"]

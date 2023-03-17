@@ -10,10 +10,10 @@ var rotation_speed := 1
 var rotation_dir := 0.0
 
 signal asteroid_split
-# Called when the node enters the scene tree for the first time.
+
 func _ready():
-	if size == 3:
-		init_velocity()
+	init_velocity()
+
 	set_random_rot_dir()
 
 func _process(delta) -> void:
@@ -42,9 +42,6 @@ func get_asteroid_size() -> int:
 
 func break_asteroid() -> void:
 	emit_signal("asteroid_split", size, velocity, global_position, value)
-	# split the asteroid in 2
-	# check size of the asteroid
-	# shrink the current one and add a medium as child?
 	queue_free()
 
 func screen_wrap() -> void:
@@ -54,6 +51,5 @@ func screen_wrap() -> void:
 
 func _on_asteroid_body_entered(body):
 	if body.is_in_group("player"):
-		print("ASTEROID HIT: player")
 		break_asteroid()
 		body.destroy_player() # Player

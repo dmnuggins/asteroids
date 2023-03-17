@@ -1,11 +1,11 @@
 extends Area2D
 
 @export var speed := 500.0
+@export var value: int = 300
 
 @onready var screen_size = get_viewport_rect().size
 
 var velocity := Vector2.ZERO
-var value := 200
 var eol := false
 var x_y := true
 
@@ -18,6 +18,12 @@ signal saucer_timeout
 func _ready():
 	init_velocity()
 	
+
+# Called every frame. 'delta' is the elapsed time since the previous frame.
+func _process(delta):
+	position += velocity * delta
+	screen_wrap()
+
 func init_velocity():
 	randomize()
 	var x = randf_range(-50,50)
@@ -40,18 +46,12 @@ func change_dir():
 	else:
 		velocity.y = -velocity.y
 
-# Called every frame. 'delta' is the elapsed time since the previous frame.
-func _process(delta):
-	position += velocity * delta
-	screen_wrap()
-
 func screen_wrap() -> void:
 	position = position.posmodv(screen_size)
 
 func destroy_saucer() -> void:
 	emit_signal("saucer_hit", value)
 	print("SAUCER: hit")
-	GameManager.handle_bonus_destruction(value)
 	queue_free()
 
 func warp_saucer() -> void:

@@ -1,19 +1,18 @@
-[gd_scene load_steps=10 format=3 uid="uid://bm7o5d8v5ttm1"]
+[gd_scene load_steps=11 format=3 uid="uid://bm7o5d8v5ttm1"]
 
 [ext_resource type="Script" path="res://_scenes/Game/Game.gd" id="1_rnyc1"]
-[ext_resource type="FontFile" uid="uid://swu2ueyc7axk" path="res://_assets/fonts/VectorBattle-e9XO.ttf" id="2_64d4x"]
-
-[sub_resource type="Theme" id="Theme_koehr"]
-default_font = ExtResource("2_64d4x")
-
-[sub_resource type="RectangleShape2D" id="RectangleShape2D_i5xyd"]
-size = Vector2(256, 256)
+[ext_resource type="Script" path="res://_scenes/UI/UI.gd" id="2_cemqf"]
+[ext_resource type="Theme" uid="uid://dhir0viowmptm" path="res://_assets/themes/UI.tres" id="2_foafi"]
+[ext_resource type="Texture2D" uid="uid://di567tx33q3x5" path="res://_assets/images/asteroids_player_ship.png" id="3_7xbpe"]
 
 [sub_resource type="Curve2D" id="Curve2D_2r42g"]
 _data = {
 "points": PackedVector2Array(0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 1024, 0, 0, 0, 0, 0, 1024, 768, 0, 0, 0, 0, 0, 768, 0, 0, 0, 0, 0, 0)
 }
 point_count = 5
+
+[sub_resource type="RectangleShape2D" id="RectangleShape2D_i5xyd"]
+size = Vector2(256, 256)
 
 [sub_resource type="RectangleShape2D" id="RectangleShape2D_yttpa"]
 size = Vector2(29, 768)
@@ -30,20 +29,23 @@ size = Vector2(1024, 28)
 [node name="Game" type="Node2D" groups=["level"]]
 script = ExtResource("1_rnyc1")
 
+[node name="AsteroidPath" type="Path2D" parent="." groups=["spawn_path"]]
+curve = SubResource("Curve2D_2r42g")
+
+[node name="AsteroidSpawnLocation" type="PathFollow2D" parent="AsteroidPath"]
+
 [node name="PlayerSpawn" type="Node2D" parent="."]
 position = Vector2(512, 384)
 
-[node name="UI" type="Control" parent="."]
+[node name="UI" type="CanvasLayer" parent="." groups=["ui"]]
+script = ExtResource("2_cemqf")
+
+[node name="TopScreen" type="Control" parent="UI"]
 layout_mode = 3
 anchors_preset = 0
 offset_right = 1024.0
-offset_bottom = 768.0
-theme = SubResource("Theme_koehr")
-
-[node name="TopScreen" type="Control" parent="UI"]
-anchors_preset = 0
-offset_right = 1024.0
-offset_bottom = 64.0
+offset_bottom = 80.0
+theme = ExtResource("2_foafi")
 
 [node name="PlayerOne" type="Control" parent="UI/TopScreen"]
 anchors_preset = 0
@@ -51,56 +53,151 @@ offset_left = 192.0
 offset_right = 320.0
 offset_bottom = 40.0
 
+[node name="Score" type="Label" parent="UI/TopScreen/PlayerOne"]
+layout_mode = 2
+offset_left = -64.0
+offset_right = 64.0
+offset_bottom = 39.0
+theme_override_font_sizes/font_size = 30
+text = "000"
+horizontal_alignment = 2
+
+[node name="NoLives" type="Label" parent="UI/TopScreen/PlayerOne"]
+visible = false
+layout_mode = 0
+offset_left = -64.0
+offset_top = 48.0
+offset_right = 128.0
+offset_bottom = 80.0
+theme_override_font_sizes/font_size = 18
+text = "No Lives left"
+horizontal_alignment = 2
+
+[node name="Ships" type="TextureRect" parent="UI/TopScreen/PlayerOne"]
+layout_mode = 2
+offset_left = -16.0
+offset_top = 48.0
+offset_right = 2.0
+offset_bottom = 80.0
+texture = ExtResource("3_7xbpe")
+stretch_mode = 1
+flip_h = true
+
 [node name="PlayerTwo" type="Control" parent="UI/TopScreen"]
 anchors_preset = 0
 offset_left = 704.0
 offset_right = 832.0
 offset_bottom = 40.0
 
+[node name="VBoxContainer" type="VBoxContainer" parent="UI/TopScreen/PlayerTwo"]
+layout_mode = 0
+offset_right = 128.0
+offset_bottom = 40.0
+
+[node name="Score" type="Label" parent="UI/TopScreen/PlayerTwo/VBoxContainer"]
+layout_mode = 2
+theme_override_font_sizes/font_size = 30
+text = "000"
+
+[node name="Lives" type="Label" parent="UI/TopScreen/PlayerTwo/VBoxContainer"]
+layout_mode = 2
+text = "XXX"
+
 [node name="Highscore" type="Label" parent="UI/TopScreen"]
 layout_mode = 0
 offset_left = 448.0
 offset_right = 576.0
 offset_bottom = 24.0
+theme_override_font_sizes/font_size = 20
 text = "000"
+horizontal_alignment = 1
+vertical_alignment = 1
+
+[node name="ReplayMenu" type="Control" parent="UI"]
+layout_mode = 3
+anchors_preset = 0
+offset_left = 320.0
+offset_top = 192.0
+offset_right = 704.0
+offset_bottom = 240.0
+size_flags_horizontal = 4
+size_flags_vertical = 4
+theme = ExtResource("2_foafi")
+
+[node name="PlayAgain" type="Button" parent="UI/ReplayMenu"]
+layout_mode = 2
+offset_left = 64.0
+offset_top = -30.0
+offset_right = 320.0
+offset_bottom = -2.0
+focus_mode = 0
+text = "PLAY AGAIN?"
+flat = true
+
+[node name="Quit" type="Button" parent="UI/ReplayMenu"]
+layout_mode = 2
+offset_left = 64.0
+offset_top = 2.0
+offset_right = 320.0
+offset_bottom = 30.0
+focus_mode = 0
+text = "QUIT"
+flat = true
+
+[node name="HighScores" type="Control" parent="UI"]
+layout_mode = 3
+anchors_preset = 0
+offset_right = 480.0
+offset_bottom = 112.0
+theme = ExtResource("2_foafi")
+
+[node name="InitialsPrompt" type="Label" parent="UI/HighScores"]
+layout_mode = 0
+offset_left = 256.0
+offset_top = 552.0
+offset_right = 768.0
+offset_bottom = 704.0
+text = "YOUR SCORE IS ONE OF THE TEN BEST
+PLEASE ENTER YOUR INITIALS 
+PUSH ROTATE TO SELECT LETTER
+PUSH HYPERSPACE WHEN LETTER IS CORRECT"
 
 [node name="BotScreen" type="Control" parent="UI"]
+layout_mode = 3
 anchors_preset = 0
 offset_top = 704.0
 offset_right = 1024.0
 offset_bottom = 768.0
 
-[node name="PlayerZone" type="Area2D" parent="."]
+[node name="PlayerSpawnZone" type="Area2D" parent="."]
 
-[node name="PlayerZoneCollider" type="CollisionShape2D" parent="PlayerZone"]
+[node name="PlayerZoneCollider" type="CollisionShape2D" parent="PlayerSpawnZone"]
 position = Vector2(512, 384)
 shape = SubResource("RectangleShape2D_i5xyd")
 
-[node name="AsteroidPath" type="Path2D" parent="." groups=["spawn_path"]]
-curve = SubResource("Curve2D_2r42g")
+[node name="LeftBound" type="Area2D" parent="." groups=["bounds"]]
 
-[node name="AsteroidSpawnLocation" type="PathFollow2D" parent="AsteroidPath"]
-
-[node name="Area2D" type="Area2D" parent="." groups=["bounds"]]
-
-[node name="CollisionShape2D" type="CollisionShape2D" parent="Area2D"]
+[node name="CollisionShape2D" type="CollisionShape2D" parent="LeftBound"]
 position = Vector2(-14.5, 384)
 shape = SubResource("RectangleShape2D_yttpa")
 
-[node name="Area2D2" type="Area2D" parent="." groups=["bounds"]]
+[node name="TopBound" type="Area2D" parent="." groups=["bounds"]]
 
-[node name="CollisionShape2D" type="CollisionShape2D" parent="Area2D2"]
+[node name="CollisionShape2D" type="CollisionShape2D" parent="TopBound"]
 position = Vector2(512, -12)
 shape = SubResource("RectangleShape2D_ngxxt")
 
-[node name="Area2D3" type="Area2D" parent="." groups=["bounds"]]
+[node name="RightBound" type="Area2D" parent="." groups=["bounds"]]
 
-[node name="CollisionShape2D" type="CollisionShape2D" parent="Area2D3"]
+[node name="CollisionShape2D" type="CollisionShape2D" parent="RightBound"]
 position = Vector2(1036, 383.5)
 shape = SubResource("RectangleShape2D_g8j52")
 
-[node name="Area2D4" type="Area2D" parent="." groups=["bounds"]]
+[node name="BottomBound" type="Area2D" parent="." groups=["bounds"]]
 
-[node name="CollisionShape2D" type="CollisionShape2D" parent="Area2D4"]
+[node name="CollisionShape2D" type="CollisionShape2D" parent="BottomBound"]
 position = Vector2(512, 782)
 shape = SubResource("RectangleShape2D_nbnup")
+
+[connection signal="pressed" from="UI/ReplayMenu/PlayAgain" to="UI" method="_on_play_again_pressed" flags=18]
+[connection signal="pressed" from="UI/ReplayMenu/Quit" to="UI" method="_on_quit_pressed" flags=18]
