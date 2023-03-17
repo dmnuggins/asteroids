@@ -31,18 +31,19 @@ var spawn_timer: Timer
 var respawn_timer: Timer
 var time_between_spawns: float = 1.0
 var ui
-var game_over = false
+var GAME_OVER = false
 
 # Player vars
 var max_lives: int = 1
 var player_one_lives: int = max_lives
 var player_timer: Timer
 var player
-var spawnable: bool = false
+var player_spawnable: bool = false
 
 # Bonus vars
 var bonus
 var bonus_timer: Timer
+var bonus_spawnable: bool = false
 
 # Asteroid vars
 var max_asteroids := 196
@@ -59,10 +60,10 @@ func _ready():
 	load_game()
 
 func _process(delta):
-	if !game_over:
-		if !bonus_init:
+	if !GAME_OVER:
+		if bonus_spawnable:
 			init_bonus_spawn_timer()
-		if spawnable && level.spawn_clear():
+		if player_spawnable && level.spawn_clear():
 			spawn_player()
 		if ast_spawnable && wave != 1 && !bonus:
 			handle_next_wave()
@@ -97,15 +98,26 @@ func set_references() -> void:
 	spawn_path = get_tree().get_first_node_in_group("spawn_path")
 	spawn_follow_path = spawn_path.get_child(0)
 	
+func start_game() -> void:
+	
+	pass
+
+func idle_game() -> void:
+	
+	pass
+
 func load_game() -> void:
 	spawn_asteroids(3)
 	set_remaining_asteroids()
+	bonus_spawn_init() # reset flag so bonus can spaw
+	player_spawn_init()
 	spawn_player()
 	connect_signals()
 #	ui.update_score()
 #	ui.load_lives()
 
 func reset_game() -> void:
+	GAME_OVER = false
 	clear_screen()
 	player_one_lives = 1
 	score = 0
@@ -118,10 +130,11 @@ func reset_game() -> void:
 	pass
 
 func clear_screen() -> void:
-	print("RESET GAME")
+	print("Screen cleared")
 	if player != null:
 		player.queue_free()
 	if bonus != null:
+		bonus_spawnable = false
 		bonus.queue_free()
 	clear_asteroids()
 	pass
@@ -146,7 +159,12 @@ func set_remaining_asteroids() -> void:
 
 func quit_game() -> void:
 		get_tree().quit()
-		
+
+func game_over() -> void:
+	GAME_OVER = true
+	ui.toggle_replay()
+	
+	
 #=====GAME_FLOW_END=====#
 
 #=====TIMERS=====#
@@ -158,7 +176,7 @@ func init_asteroid_timer():
 	asteroids_timer.wait_time = 3.0
 	asteroids_timer.one_shot = true
 	asteroids_timer.start()
-	asteroids_timer.timeout.connect(set_ast_status) # player respawn is called when respawn_timer timeout
+	asteroids_timer.timeout.connect(ast_spawn_init) # player respawn is called when respawn_timer timeout
 
 # respawn timer for player after colliding with asteroid
 func init_respawn_timer():
@@ -168,13 +186,13 @@ func init_respawn_timer():
 	respawn_timer.wait_time = 2.0
 	respawn_timer.one_shot = true
 	respawn_timer.start()
-	respawn_timer.timeout.connect(set_spawn_status) # player respawn is called when respawn_timer timeout
+	respawn_timer.timeout.connect(player_spawn_init) # player respawn is called when respawn_timer timeout
 
 func init_bonus_spawn_timer() -> void:
 	print("Initialized bonus spawn timer")
+	bonus_spawnable = false
 	bonus_timer = Timer.new()
 	add_child(bonus_timer)
-	bonus_init = true
 	bonus_timer.wait_time = 5.0
 	bonus_timer. one_shot = true
 	bonus_timer.start()
@@ -182,11 +200,14 @@ func init_bonus_spawn_timer() -> void:
 #=====TIMERS END=====#
 
 #=====SPAWNERS=====#
-func set_spawn_status() -> void:
-	spawnable = true
+func player_spawn_init() -> void:
+	player_spawnable = true
 
-func set_ast_status() -> void:
+func ast_spawn_init() -> void:
 	ast_spawnable = true
+
+func bonus_spawn_init() -> void:
+	bonus_spawnable = true
 	
 # spawn player called after player death
 func spawn_player() -> void:
@@ -198,7 +219,7 @@ func spawn_player() -> void:
 	player.player_hit.connect(init_respawn_timer)
 	player.player_hit.connect(handle_player_destruction)
 	level.add_child(player)
-	spawnable = false
+	player_spawnable = false
 
 # spawn asteroids given size and number
 func spawn_asteroids(size: int) -> void:
@@ -247,7 +268,8 @@ func spawn_bonus() -> void:
 	bonus = bonus_prefab.instantiate()
 	bonus.global_position = random_position()
 	level.add_child(bonus)
-#	bonus = get_tree().get_first_node_in_group("bonus")
+	
+	# Connect bonus signals
 	bonus.saucer_shoot.connect(bonus_shoot)
 	bonus.saucer_hit.connect(handle_bonus_destruction)
 	bonus.saucer_timeout.connect(handle_bonus_timeout)
@@ -272,19 +294,20 @@ func handle_asteroid_destruction(size: int, velocity: Vector2, ast_position: Vec
 
 func handle_bonus_destruction(value: int) -> void:
 	print("HANDLE BONUS DESTRUCTION")
+	bonus_spawn_init()
 	score += value
 	ui.update_score()
 	bonus_init = false
 
 func handle_bonus_timeout() -> void:
-	bonus_init = false
+	bonus_spawn_init()
+	pass
 
 func handle_player_destruction() -> void:
 	player_one_lives -= 1
 	ui.load_lives()
 	if player_one_lives < 0:
-		game_over = true
-		ui.toggle_replay()
+		game_over()
 #=====DESPAWN END=====#
 
 #=====BONUS=====#
