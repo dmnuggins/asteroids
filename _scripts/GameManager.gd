@@ -1,4 +1,4 @@
-# Singelton script loader
+# SINGLETON
 
 extends Node
 
@@ -34,7 +34,7 @@ var ui
 var game_over = false
 
 # Player vars
-var max_lives: int = 5
+var max_lives: int = 1
 var player_one_lives: int = max_lives
 var player_timer: Timer
 var player
@@ -107,8 +107,11 @@ func load_game() -> void:
 
 func reset_game() -> void:
 	clear_screen()
-	player_one_lives = 3
+	player_one_lives = 1
 	score = 0
+	difficulty = 1
+	wave = 1
+	ui.toggle_replay()
 	ui.update_score()
 	ui.load_lives()
 	load_game()
@@ -131,10 +134,10 @@ func clear_asteroids() -> void:
 		pass
 
 func handle_next_wave() -> void:
-	print("handle_next_wave")
-	print("Wave: ", wave)
-	print("Difficulty: ", difficulty)
-	print("to_spawn:", to_spawn)
+#	print("handle_next_wave")
+#	print("Wave: ", wave)
+#	print("Difficulty: ", difficulty)
+#	print("to_spawn:", to_spawn)
 	spawn_asteroids(3)
 	set_remaining_asteroids()
 
@@ -281,6 +284,7 @@ func handle_player_destruction() -> void:
 	ui.load_lives()
 	if player_one_lives < 0:
 		game_over = true
+		ui.toggle_replay()
 #=====DESPAWN END=====#
 
 #=====BONUS=====#

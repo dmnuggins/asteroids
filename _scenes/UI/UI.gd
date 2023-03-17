@@ -20,8 +20,13 @@ func _ready():
 func _process(delta):
 	pass
 
+func toggle_replay() -> void:
+	if $ReplayMenu.visible:
+		$ReplayMenu.hide()
+	else:
+		$ReplayMenu.show()
+
 func load_lives() -> void:
-	
 	p1_num_lives = GameManager.player_one_lives
 	p1_ships.size.x = p1_num_lives * 18
 	p1_ships.position.x = (GameManager.max_lives - p1_num_lives - 1) * 18
