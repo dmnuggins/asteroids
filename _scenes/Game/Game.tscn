@@ -1,6 +1,10 @@
-[gd_scene load_steps=8 format=3 uid="uid://bm7o5d8v5ttm1"]
+[gd_scene load_steps=10 format=3 uid="uid://bm7o5d8v5ttm1"]
 
 [ext_resource type="Script" path="res://_scenes/Game/Game.gd" id="1_rnyc1"]
+[ext_resource type="FontFile" uid="uid://swu2ueyc7axk" path="res://_assets/fonts/VectorBattle-e9XO.ttf" id="2_64d4x"]
+
+[sub_resource type="Theme" id="Theme_koehr"]
+default_font = ExtResource("2_64d4x")
 
 [sub_resource type="RectangleShape2D" id="RectangleShape2D_i5xyd"]
 size = Vector2(256, 256)
@@ -32,10 +36,39 @@ position = Vector2(512, 384)
 [node name="UI" type="Control" parent="."]
 layout_mode = 3
 anchors_preset = 0
-offset_left = 80.0
-offset_top = 24.0
-offset_right = 936.0
-offset_bottom = 120.0
+offset_right = 1024.0
+offset_bottom = 768.0
+theme = SubResource("Theme_koehr")
+
+[node name="TopScreen" type="Control" parent="UI"]
+anchors_preset = 0
+offset_right = 1024.0
+offset_bottom = 64.0
+
+[node name="PlayerOne" type="Control" parent="UI/TopScreen"]
+anchors_preset = 0
+offset_left = 192.0
+offset_right = 320.0
+offset_bottom = 40.0
+
+[node name="PlayerTwo" type="Control" parent="UI/TopScreen"]
+anchors_preset = 0
+offset_left = 704.0
+offset_right = 832.0
+offset_bottom = 40.0
+
+[node name="Highscore" type="Label" parent="UI/TopScreen"]
+layout_mode = 0
+offset_left = 448.0
+offset_right = 576.0
+offset_bottom = 24.0
+text = "000"
+
+[node name="BotScreen" type="Control" parent="UI"]
+anchors_preset = 0
+offset_top = 704.0
+offset_right = 1024.0
+offset_bottom = 768.0
 
 [node name="PlayerZone" type="Area2D" parent="."]
 
