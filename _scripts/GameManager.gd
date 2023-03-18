@@ -95,9 +95,9 @@ func achieved_highscore() -> bool:
 			return true
 	return false
 
-# user initials, score as parameters
-func save_highscore() -> void:
-	
+# returns true if there is a new high score saved
+func save_highscore() -> bool:
+	var new_highscore = false
 	# conditinal when there is no save data
 	if highest_scores.size() <= 0:
 		highest_scores.push_front([score, "initials"])
@@ -111,10 +111,12 @@ func save_highscore() -> void:
 			# check if there is only one value, just add to array if higher
 			if score > cur_num && size <= 1:
 				highest_scores.push_front([score, "initials"])
+				new_highscore = true
 				break
 			# if more than one value
 			elif score >= cur_num && size > 1:
 				highest_scores.insert(x, [score,"initials"])
+				new_highscore = true
 				break
 				# check if next number is >=, then push if conditional true
 			else:
@@ -122,13 +124,13 @@ func save_highscore() -> void:
 		# conditional to truncate top 10 scores
 		if highest_scores.size() > 10:
 			highest_scores.pop_back()
-		# re-reverse order of array
-#		highest_scores.reverse()
-	
+#	print(highest_scores)
+	return new_highscore
+
+func upload_scores():
 	var saveFile = FileAccess.open("user://highscores.save", FileAccess.WRITE)
 	for i in highest_scores.size():
 		saveFile.store_line(str(i, ":", highest_scores[i][0], ",",highest_scores[i][1],"\r"))
-	print(highest_scores)
 
 func load_highscore():
 	
@@ -153,7 +155,6 @@ func load_highscore():
 	loadFile.close()
 	print(loaded_scores)
 	return loaded_scores
-	
 
 #=====SAVE_DATA_END=====#
 
@@ -228,6 +229,8 @@ func quit_game() -> void:
 	get_tree().quit()
 
 func game_over() -> void:
+	if save_highscore():
+		upload_scores()
 	GAME_OVER = true
 	ui.toggle_replay()
 	
