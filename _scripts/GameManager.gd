@@ -74,7 +74,6 @@ func _process(delta):
 	
 	if Input.is_action_just_pressed("save"):
 		save_highscore()
-		
 
 	if Input.is_action_just_pressed("load"):
 		highest_scores = load_highscore()
@@ -86,11 +85,6 @@ func connect_signals() -> void:
 	# ui connectors
 	ui.quit.connect(quit_game)
 	ui.play_again.connect(reset_game)
-	# asteroid connectors
-	var asteroids = get_tree().get_nodes_in_group("asteroid")
-	for asteroid in asteroids:
-		asteroid.asteroid_split.connect(handle_asteroid_destruction)
-	pass
 
 #=====SAVE_DATA=====#
 
@@ -104,42 +98,37 @@ func achieved_highscore() -> bool:
 # user initials, score as parameters
 func save_highscore() -> void:
 	
+	# conditinal when there is no save data
 	if highest_scores.size() <= 0:
 		highest_scores.push_front([score, "initials"])
 	else:
-		# check if 
-
-		highest_scores.reverse() # so array goes from lowest to highest
-		var prev_num
+#		highest_scores.reverse() # so array goes from lowest to highest
 		var cur_num
-		var next_num
 		var size = highest_scores.size()
-		for x in size:
-#			prev_num = highest_scores[x -1]
-			cur_num = highest_scores[x][0]
-#			next_num = highest_scores[x + 1]
-			if score > cur_num && size <= 1:
-				highest_scores.push_back([score, "initials"])
-				break
-			elif score >= cur_num && size > 1:
-				
-				if score >= highest_scores[x + 1][0]:
-					highest_scores.push_back([score, "initials"])
-					break
-		if highest_scores.size() > 10:
-			highest_scores.pop_front()
-		highest_scores.reverse()
 		
-	print(highest_scores)
+		for x in size:
+			cur_num = highest_scores[x][0]
+			# check if there is only one value, just add to array if higher
+			if score > cur_num && size <= 1:
+				highest_scores.push_front([score, "initials"])
+				break
+			# if more than one value
+			elif score >= cur_num && size > 1:
+				highest_scores.insert(x, [score,"initials"])
+				break
+				# check if next number is >=, then push if conditional true
+			else:
+				continue
+		# conditional to truncate top 10 scores
+		if highest_scores.size() > 10:
+			highest_scores.pop_back()
+		# re-reverse order of array
+#		highest_scores.reverse()
 	
 	var saveFile = FileAccess.open("user://highscores.save", FileAccess.WRITE)
 	for i in highest_scores.size():
 		saveFile.store_line(str(i, ":", highest_scores[i][0], ",",highest_scores[i][1],"\r"))
-	
-#	for i in save_data.size():
-#		saveFile.store_line(str(save_data.keys()[i],":", save_data.values()[i],"\r")\
-#			.replace("\"","").replace(" ","").replace("[","").replace("]","")) # removes extra space and double-quotes godot auto adds to strings
-	print("save_highscore")
+	print(highest_scores)
 
 func load_highscore():
 	
@@ -149,9 +138,10 @@ func load_highscore():
 	if not FileAccess.file_exists("user://highscores.save"):
 		print("ERROR: no save data to load")
 		return # Error! No save data to load.
-
+		
 	var loadFile = FileAccess.open(SAVEFILE, FileAccess.READ)
 	var loaded_scores = []
+	
 	for i in loadFile.get_as_text().count(":"):
 		var line = loadFile.get_line()
 		var index = line.split(":")[0]
@@ -160,22 +150,6 @@ func load_highscore():
 		var load_name = content.split(",")[1]
 		loaded_scores.push_back([int(load_score), load_name])
 		
-#	for i in loadFile.get_as_text().count(":"):
-#		var line = loadFile.get_line()
-#		var key = line.split(":")[0]
-#		var value = line.split(":")[1]
-#		var num
-#		var str
-#		if value.is_valid_int():
-#			value = int(value)
-#		elif value.begins_with("["):
-##			value = value.trim_prefix("[")
-##			value = value.trim_suffix("]")
-#			num = int(value.split(",")[0])
-#			str = value.split(",")[1]
-##		print(key, "\n")
-#		content[key] = value
-#		save_data.key = [num, str]
 	loadFile.close()
 	print(loaded_scores)
 	return loaded_scores
@@ -199,6 +173,7 @@ func idle_game() -> void:
 	pass
 
 func load_game() -> void:
+	highest_scores = load_highscore()
 	spawn_asteroids(3)
 	set_remaining_asteroids()
 	bonus_spawn_init() # reset flag so bonus can spaw
