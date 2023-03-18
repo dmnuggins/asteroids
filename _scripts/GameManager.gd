@@ -74,12 +74,6 @@ func _process(delta):
 		if ast_spawnable && wave != 1 && !bonus:
 			handle_next_wave()
 	
-#	if Input.is_action_just_pressed("save"):
-#		save_highscore()
-
-#	if Input.is_action_just_pressed("load"):
-#		highest_scores = load_highscore()
-	
 	pass
 
 # connect signals of objects in game scene
@@ -90,15 +84,7 @@ func connect_signals() -> void:
 	ui.initial_submit.connect(set_initials)
 
 #=====SAVE_DATA=====#
-
-func achieved_highscore() -> bool:
-	for record in highest_scores:
-		if score > record[0]:
-			print(score, " > ", record[0])
-			return true
-	return false
-
-# returns true if there is a new high score saved
+# returns true if new high score is achieved that makes top 10
 func new_highscore() -> bool:
 	var new_highscore = false
 	# conditinal when there is no save data
@@ -132,6 +118,7 @@ func new_highscore() -> bool:
 #	print(highest_scores)
 	return new_highscore
 
+# save high scores in save file
 func upload_scores():
 	if highest_scores.size() <= 1:
 		highest_scores.push_front([score,player_initials])
@@ -144,6 +131,7 @@ func upload_scores():
 	for i in highest_scores.size():
 		saveFile.store_line(str(i, ":", highest_scores[i][0], ",",highest_scores[i][1],"\r"))
 
+# loads high scores from save file
 func load_highscore():
 	
 	if not FileAccess.file_exists("user://highscores.save"):
@@ -167,27 +155,28 @@ func load_highscore():
 	ui.update_numba_one(numba_one)
 	print(loaded_scores)
 	return loaded_scores
-
-
 #=====SAVE_DATA_END=====#
 
 #=====GAME_FLOW=====#
+# links up singleton with primary game elements (ui, level, spawn_path)
 func set_references() -> void:
 	level = get_tree().get_first_node_in_group("level")
 	ui = get_tree().get_first_node_in_group("ui")
 	spawn_path = get_tree().get_first_node_in_group("spawn_path")
 	spawn_follow_path = spawn_path.get_child(0)
-	
+
+# to-do
 func start_game() -> void:
 	
 	pass
 
+# to-do
 func idle_game() -> void:
 	
 	pass
 
+# loads game assets & initialize spawners
 func load_game() -> void:
-
 	highest_scores = load_highscore()
 	spawn_asteroids(3)
 	set_remaining_asteroids()
@@ -195,9 +184,8 @@ func load_game() -> void:
 	player_spawn_init()
 	spawn_player()
 	connect_signals()
-#	ui.update_score()
-#	ui.load_lives()
 
+# reset game
 func reset_game() -> void:
 	# toggle specific UI elements for loop when player has new high score
 	if high_flag:
@@ -220,6 +208,7 @@ func reset_game() -> void:
 	load_game()
 	pass
 
+# clears screen of all player, asteroid, bonus assets
 func clear_screen() -> void:
 	print("Screen cleared")
 	if player != null:
@@ -230,6 +219,7 @@ func clear_screen() -> void:
 	clear_asteroids()
 	pass
 
+# clear all asteroids from tree
 func clear_asteroids() -> void:
 	var asteroids = get_tree().get_nodes_in_group("asteroid")
 	if asteroids.size() > 0:
@@ -237,20 +227,19 @@ func clear_asteroids() -> void:
 			asteroid.queue_free()
 		pass
 
+# spawns next wave of asteroids
 func handle_next_wave() -> void:
-#	print("handle_next_wave")
-#	print("Wave: ", wave)
-#	print("Difficulty: ", difficulty)
-#	print("to_spawn:", to_spawn)
 	spawn_asteroids(3)
 	set_remaining_asteroids()
 
 func set_remaining_asteroids() -> void:
 	asteroids_remaining = to_spawn * 11
 
+# quit game
 func quit_game() -> void:
 	get_tree().quit()
 
+# handle game over state
 func game_over() -> void:
 	if new_highscore():
 		print("NEW HIGH SCORE")
@@ -264,6 +253,7 @@ func game_over() -> void:
 	GAME_OVER = true
 	
 
+# get initals, update temp array of high scores, upload new high scores (may rename func to something more suitable)
 func set_initials(new_text: String) -> void:
 	player_initials = new_text
 	upload_scores()
@@ -273,7 +263,6 @@ func set_initials(new_text: String) -> void:
 	ui.update_leaderboard(highest_scores)
 	ui.toggle_leaderboard()
 	ui.toggle_replay()
-	
 #=====GAME_FLOW_END=====#
 
 #=====TIMERS=====#
@@ -297,6 +286,7 @@ func init_respawn_timer():
 	respawn_timer.start()
 	respawn_timer.timeout.connect(player_spawn_init) # player respawn is called when respawn_timer timeout
 
+# bonus spawn timer
 func init_bonus_spawn_timer() -> void:
 	print("Initialized bonus spawn timer")
 	bonus_spawnable = false
@@ -330,6 +320,19 @@ func spawn_player() -> void:
 	level.add_child(player)
 	player_spawnable = false
 
+func spawn_bonus() -> void:
+	if bonus_timer:
+		bonus_timer.queue_free()
+	print("Bonus spawned")
+	bonus = bonus_prefab.instantiate()
+	bonus.global_position = random_position()
+	level.add_child(bonus)
+	
+	# Connect bonus signals
+	bonus.saucer_shoot.connect(bonus_shoot)
+	bonus.saucer_hit.connect(handle_bonus_destruction)
+	bonus.saucer_timeout.connect(handle_bonus_timeout)
+
 # spawn asteroids given size and number
 func spawn_asteroids(size: int) -> void:
 	# removes timer spawn timer
@@ -354,34 +357,6 @@ func add_asteroids(position: Vector2) -> void:
 	asteroid.asteroid_split.connect(handle_asteroid_destruction) # connect destruction signal
 	level.add_child(asteroid)
 	asteroid.global_position = position
-
-# splits asteroids into smaller asteroids given size and instances given velocity and position
-func split_asteroids(size: int, velocity: Vector2, ast_position: Vector2) -> void:
-	if size == 3:
-		for i in 2:
-			asteroid = med_asteroid_scene.instantiate()
-			asteroid.split_velocity(random_velocity(velocity))
-			add_asteroids(ast_position)
-	elif size == 2:
-		for i in 4:
-			asteroid = sml_asteroid_scene.instantiate()
-			asteroid.split_velocity(random_velocity(velocity))
-			add_asteroids(ast_position)
-		pass
-	pass
-
-func spawn_bonus() -> void:
-	if bonus_timer:
-		bonus_timer.queue_free()
-	print("Bonus spawned")
-	bonus = bonus_prefab.instantiate()
-	bonus.global_position = random_position()
-	level.add_child(bonus)
-	
-	# Connect bonus signals
-	bonus.saucer_shoot.connect(bonus_shoot)
-	bonus.saucer_hit.connect(handle_bonus_destruction)
-	bonus.saucer_timeout.connect(handle_bonus_timeout)
 #=====SPAWNERS END=====#
 
 #=====DESPAWN=====#
@@ -400,6 +375,21 @@ func handle_asteroid_destruction(size: int, velocity: Vector2, ast_position: Vec
 		difficulty += 1
 		wave += 1
 		to_spawn = difficulty + 3
+
+# splits asteroids into smaller asteroids given size and instances given velocity and position
+func split_asteroids(size: int, velocity: Vector2, ast_position: Vector2) -> void:
+	if size == 3:
+		for i in 2:
+			asteroid = med_asteroid_scene.instantiate()
+			asteroid.split_velocity(random_velocity(velocity))
+			add_asteroids(ast_position)
+	elif size == 2:
+		for i in 4:
+			asteroid = sml_asteroid_scene.instantiate()
+			asteroid.split_velocity(random_velocity(velocity))
+			add_asteroids(ast_position)
+		pass
+	pass
 
 func handle_bonus_destruction(value: int) -> void:
 	print("HANDLE BONUS DESTRUCTION")
