@@ -9,13 +9,7 @@ extends Node
 @onready var bonus_prefab: PackedScene = load("res://_scenes/FlyingSaucer/FlyingSaucer.tscn")
 @onready var bullet_prefab: PackedScene = load("res://_scenes/Bullet/Bullet.tscn")
 
-# Save data
-var save_data = {
-	"rank": 1,
-	"high_score": 0,
-	"initials": "AAA"
-}
-var SAVEFILE = "user://highscores.save"
+
 
 # General vars
 var score: int = 0
@@ -55,6 +49,16 @@ var ast_spawnable = true # true to init asteroids
 # Signals
 signal last_asteroid_destroyed
 
+var player_initials
+
+# Save data
+var highest_scores = []
+
+var cur_high_score
+var cur_high_score_initials
+
+var SAVEFILE = "user://highscores.save"
+
 func _ready():
 	set_references()
 	load_game()
@@ -67,6 +71,14 @@ func _process(delta):
 			spawn_player()
 		if ast_spawnable && wave != 1 && !bonus:
 			handle_next_wave()
+	
+	if Input.is_action_just_pressed("save"):
+		save_highscore()
+		
+
+	if Input.is_action_just_pressed("load"):
+		highest_scores = load_highscore()
+	
 	pass
 
 # connect signals of objects in game scene
@@ -81,14 +93,94 @@ func connect_signals() -> void:
 	pass
 
 #=====SAVE_DATA=====#
-func save_highscore() -> void:
-	var saveFile = FileAccess.open("user://high_score.save", FileAccess.WRITE)
-	saveFile.store_32(highscore)
 
-func load_highscore() -> void:
+func achieved_highscore() -> bool:
+	for record in highest_scores:
+		if score > record[0]:
+			print(score, " > ", record[0])
+			return true
+	return false
+
+# user initials, score as parameters
+func save_highscore() -> void:
+	
+	if highest_scores.size() <= 0:
+		highest_scores.push_front([score, "initials"])
+	else:
+		# check if 
+
+		highest_scores.reverse() # so array goes from lowest to highest
+		var prev_num
+		var cur_num
+		var next_num
+		var size = highest_scores.size()
+		for x in size:
+#			prev_num = highest_scores[x -1]
+			cur_num = highest_scores[x][0]
+#			next_num = highest_scores[x + 1]
+			if score > cur_num && size <= 1:
+				highest_scores.push_back([score, "initials"])
+				break
+			elif score >= cur_num && size > 1:
+				
+				if score >= highest_scores[x + 1][0]:
+					highest_scores.push_back([score, "initials"])
+					break
+		if highest_scores.size() > 10:
+			highest_scores.pop_front()
+		highest_scores.reverse()
+		
+	print(highest_scores)
+	
+	var saveFile = FileAccess.open("user://highscores.save", FileAccess.WRITE)
+	for i in highest_scores.size():
+		saveFile.store_line(str(i, ":", highest_scores[i][0], ",",highest_scores[i][1],"\r"))
+	
+#	for i in save_data.size():
+#		saveFile.store_line(str(save_data.keys()[i],":", save_data.values()[i],"\r")\
+#			.replace("\"","").replace(" ","").replace("[","").replace("]","")) # removes extra space and double-quotes godot auto adds to strings
+	print("save_highscore")
+
+func load_highscore():
+	
+	for i in highest_scores:
+		print("score: ", i[0]," name: ", i[1])
+	
+	if not FileAccess.file_exists("user://highscores.save"):
+		print("ERROR: no save data to load")
+		return # Error! No save data to load.
+
 	var loadFile = FileAccess.open(SAVEFILE, FileAccess.READ)
-	if FileAccess.file_exists(SAVEFILE):
-		highscore = loadFile.get_32()
+	var loaded_scores = []
+	for i in loadFile.get_as_text().count(":"):
+		var line = loadFile.get_line()
+		var index = line.split(":")[0]
+		var content = line.split(":")[1]
+		var load_score = content.split(",")[0]
+		var load_name = content.split(",")[1]
+		loaded_scores.push_back([int(load_score), load_name])
+		
+#	for i in loadFile.get_as_text().count(":"):
+#		var line = loadFile.get_line()
+#		var key = line.split(":")[0]
+#		var value = line.split(":")[1]
+#		var num
+#		var str
+#		if value.is_valid_int():
+#			value = int(value)
+#		elif value.begins_with("["):
+##			value = value.trim_prefix("[")
+##			value = value.trim_suffix("]")
+#			num = int(value.split(",")[0])
+#			str = value.split(",")[1]
+##		print(key, "\n")
+#		content[key] = value
+#		save_data.key = [num, str]
+	loadFile.close()
+	print(loaded_scores)
+	return loaded_scores
+	
+
 #=====SAVE_DATA_END=====#
 
 #=====GAME_FLOW=====#
@@ -158,7 +250,7 @@ func set_remaining_asteroids() -> void:
 	asteroids_remaining = to_spawn * 11
 
 func quit_game() -> void:
-		get_tree().quit()
+	get_tree().quit()
 
 func game_over() -> void:
 	GAME_OVER = true
