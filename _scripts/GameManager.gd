@@ -9,23 +9,30 @@ extends Node
 @onready var bonus_prefab: PackedScene = load("res://_scenes/FlyingSaucer/FlyingSaucer.tscn")
 @onready var bullet_prefab: PackedScene = load("res://_scenes/Bullet/Bullet.tscn")
 
-
-
-# General vars
-var score: int = 0
-var highscore: int = 0
-var wave: int = 1
-var difficulty: int = 1
-var to_spawn: int = 3 # number of asteroids to spawn based on difficulty increase
-var bonus_init: bool = false
+# State/Node vars
 var level: Node2D
+var ui
 var spawn_path
 var spawn_follow_path
 var spawn_timer: Timer
 var respawn_timer: Timer
-var time_between_spawns: float = 1.0
-var ui
 var GAME_OVER = false
+
+# Level scaling
+var wave: int = 1
+var difficulty: int = 1
+var to_spawn: int = 3 # number of asteroids to spawn based on difficulty increase
+
+# Save/data vars
+var score: int = 0
+var highscore: int = 0
+var player_initials: String
+var new_score: int
+var new_score_index: int
+var high_flag = false
+var highest_scores = []
+var numba_one: int = 0
+var SAVEFILE = "user://highscores.save"
 
 # Player vars
 var max_lives: int = 3
@@ -49,24 +56,20 @@ var ast_spawnable = true # true to init asteroids
 # Signals
 signal last_asteroid_destroyed
 
-var player_initials: String
-var new_score: int
-var new_score_index: int
-var high_flag = false
-
-# Save data
-var highest_scores = []
-
-var numba_one: int = 0
-
-var SAVEFILE = "user://highscores.save"
-
 func _ready():
 	set_references()
 	load_game()
 
 func _process(delta):
-	if !GAME_OVER:
+	
+	# check if game idle
+	# spawn idle elements (not player)
+	
+	# if start game button pressed
+	# run start game (call reset game, hide start button)
+	# set game over false
+
+	if !GAME_OVER: 
 		if bonus_spawnable:
 			init_bonus_spawn_timer()
 		if player_spawnable && level.spawn_clear():
@@ -188,7 +191,7 @@ func load_game() -> void:
 # reset game
 func reset_game() -> void:
 	# toggle specific UI elements for loop when player has new high score
-	if high_flag:
+	if high_flag: # add conditional if game is not idle
 		#replay & highscore
 		ui.toggle_replay()
 		ui.toggle_highscores()
@@ -203,6 +206,8 @@ func reset_game() -> void:
 	score = 0
 	difficulty = 1
 	wave = 1
+	to_spawn = 3
+	set_remaining_asteroids()
 	ui.update_score()
 	ui.load_lives()
 	load_game()
@@ -233,7 +238,7 @@ func handle_next_wave() -> void:
 	set_remaining_asteroids()
 
 func set_remaining_asteroids() -> void:
-	asteroids_remaining = to_spawn * 11
+	asteroids_remaining = to_spawn * 7
 
 # quit game
 func quit_game() -> void:
@@ -362,6 +367,7 @@ func add_asteroids(position: Vector2) -> void:
 #=====DESPAWN=====#
 func handle_asteroid_destruction(size: int, velocity: Vector2, ast_position: Vector2, value: int) -> void:
 	score += value
+#	print(asteroids_remaining)
 	asteroids_remaining -= 1
 	ui.update_score()
 	# get asteroid last position
@@ -384,7 +390,7 @@ func split_asteroids(size: int, velocity: Vector2, ast_position: Vector2) -> voi
 			asteroid.split_velocity(random_velocity(velocity))
 			add_asteroids(ast_position)
 	elif size == 2:
-		for i in 4:
+		for i in 2:
 			asteroid = sml_asteroid_scene.instantiate()
 			asteroid.split_velocity(random_velocity(velocity))
 			add_asteroids(ast_position)
@@ -396,7 +402,6 @@ func handle_bonus_destruction(value: int) -> void:
 	bonus_spawn_init()
 	score += value
 	ui.update_score()
-	bonus_init = false
 
 func handle_bonus_timeout() -> void:
 	bonus_spawn_init()

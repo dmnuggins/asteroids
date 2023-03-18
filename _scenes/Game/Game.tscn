@@ -89,18 +89,20 @@ offset_left = 704.0
 offset_right = 832.0
 offset_bottom = 40.0
 
-[node name="VBoxContainer" type="VBoxContainer" parent="UI/TopScreen/PlayerTwo"]
-layout_mode = 0
-offset_right = 128.0
-offset_bottom = 40.0
-
-[node name="Score" type="Label" parent="UI/TopScreen/PlayerTwo/VBoxContainer"]
+[node name="Score" type="Label" parent="UI/TopScreen/PlayerTwo"]
 layout_mode = 2
+offset_left = 64.0
+offset_right = 192.0
+offset_bottom = 39.0
 theme_override_font_sizes/font_size = 30
 text = "000"
 
-[node name="Lives" type="Label" parent="UI/TopScreen/PlayerTwo/VBoxContainer"]
+[node name="Lives" type="Label" parent="UI/TopScreen/PlayerTwo"]
 layout_mode = 2
+offset_left = 64.0
+offset_top = 48.0
+offset_right = 192.0
+offset_bottom = 71.0
 text = "XXX"
 
 [node name="Highscore" type="Label" parent="UI/TopScreen"]
@@ -205,6 +207,18 @@ anchors_preset = 0
 offset_top = 704.0
 offset_right = 1024.0
 offset_bottom = 768.0
+theme = ExtResource("2_foafi")
+
+[node name="Label" type="Label" parent="UI/BotScreen"]
+layout_mode = 0
+offset_left = 360.0
+offset_top = 32.0
+offset_right = 664.0
+offset_bottom = 55.0
+theme_override_font_sizes/font_size = 12
+text = "© 2023 Dylan Nguyen"
+horizontal_alignment = 1
+vertical_alignment = 1
 
 [node name="PlayerSpawnZone" type="Area2D" parent="."]
 
