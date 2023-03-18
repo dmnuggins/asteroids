@@ -28,7 +28,7 @@ var ui
 var GAME_OVER = false
 
 # Player vars
-var max_lives: int = 1
+var max_lives: int = 3
 var player_one_lives: int = max_lives
 var player_timer: Timer
 var player
@@ -52,12 +52,12 @@ signal last_asteroid_destroyed
 var player_initials: String
 var new_score: int
 var new_score_index: int
+var high_flag = false
 
 # Save data
 var highest_scores = []
 
-var cur_high_score
-var cur_high_score_initials
+var numba_one: int = 0
 
 var SAVEFILE = "user://highscores.save"
 
@@ -115,7 +115,7 @@ func new_highscore() -> bool:
 			# check if there is only one value, just add to array if higher
 			if score > cur_num && size <= 1:
 				
-				highest_scores.push_front([score, "initials"])
+#				highest_scores.push_front([score, "initials"])
 				new_highscore = true
 #				new_score_index = 0
 				break
@@ -146,9 +146,6 @@ func upload_scores():
 
 func load_highscore():
 	
-	for i in highest_scores:
-		print("score: ", i[0]," name: ", i[1])
-	
 	if not FileAccess.file_exists("user://highscores.save"):
 		print("ERROR: no save data to load")
 		return # Error! No save data to load.
@@ -165,6 +162,9 @@ func load_highscore():
 		loaded_scores.push_back([int(load_score), load_name])
 		
 	loadFile.close()
+	if loaded_scores.size() > 0:
+		numba_one = loaded_scores[0][0]
+	ui.update_numba_one(numba_one)
 	print(loaded_scores)
 	return loaded_scores
 
@@ -187,6 +187,7 @@ func idle_game() -> void:
 	pass
 
 func load_game() -> void:
+
 	highest_scores = load_highscore()
 	spawn_asteroids(3)
 	set_remaining_asteroids()
@@ -198,11 +199,19 @@ func load_game() -> void:
 #	ui.load_lives()
 
 func reset_game() -> void:
-	ui.toggle_replay()
-	ui.toggle_leaderboard()
+	# toggle specific UI elements for loop when player has new high score
+	if high_flag:
+		#replay & highscore
+		ui.toggle_replay()
+		ui.toggle_highscores()
+		ui.toggle_leaderboard()
+		ui.toggle_initials()
+	# toggle specific UI elements for loop when NO new high score
+	else:
+		ui.toggle_replay()
 	GAME_OVER = false
 	clear_screen()
-	player_one_lives = 1
+	player_one_lives = 3
 	score = 0
 	difficulty = 1
 	wave = 1
@@ -244,9 +253,12 @@ func quit_game() -> void:
 
 func game_over() -> void:
 	if new_highscore():
+		print("NEW HIGH SCORE")
 		# Prompt user for for initials
 		ui.toggle_highscores()
+		high_flag = true
 	else:
+		high_flag = false
 		print("NO NEW SCORE")
 		ui.toggle_replay()
 	GAME_OVER = true
@@ -255,6 +267,8 @@ func game_over() -> void:
 func set_initials(new_text: String) -> void:
 	player_initials = new_text
 	upload_scores()
+	numba_one = highest_scores[0][0]
+	ui.update_numba_one(numba_one)
 	ui.toggle_initials()
 	ui.update_leaderboard(highest_scores)
 	ui.toggle_leaderboard()
@@ -319,7 +333,7 @@ func spawn_player() -> void:
 # spawn asteroids given size and number
 func spawn_asteroids(size: int) -> void:
 	# removes timer spawn timer
-	if asteroids_timer:
+	if asteroids_timer != null:
 		asteroids_timer.queue_free()
 	if size == 3:
 		for i in to_spawn:

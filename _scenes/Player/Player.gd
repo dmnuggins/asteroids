@@ -16,8 +16,8 @@ func _ready():
 
 # Called every frame. 'delta' is the elapsed time since the previous frame.
 func _process(delta):
-	var rotation = Input.get_axis("left","right") * rotation_speed
-	rotate(rotation * delta)
+	var rotate = Input.get_axis("left","right") * rotation_speed
+	rotate(rotate * delta)
 	
 	if Input.is_action_pressed("thrust"):
 		velocity = lerp(velocity, transform.y * -speed, accel * delta)

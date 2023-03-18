@@ -56,6 +56,9 @@ func load_lives() -> void:
 		p1_ships.show()
 		$TopScreen/PlayerOne/NoLives.hide()
 
+func update_numba_one(numba_one) -> void:
+	$TopScreen/Highscore.text = str(numba_one)
+
 func update_score() -> void:
 	$TopScreen/PlayerOne/Score.text = str(GameManager.score)
 
