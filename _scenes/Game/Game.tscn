@@ -153,16 +153,51 @@ offset_right = 480.0
 offset_bottom = 112.0
 theme = ExtResource("2_foafi")
 
-[node name="InitialsPrompt" type="Label" parent="UI/HighScores"]
+[node name="Initials" type="Control" parent="UI/HighScores"]
+anchors_preset = 0
+
+[node name="InitialsPrompt" type="Label" parent="UI/HighScores/Initials"]
 layout_mode = 0
-offset_left = 256.0
-offset_top = 552.0
-offset_right = 768.0
-offset_bottom = 704.0
+offset_left = 264.0
+offset_top = 144.0
+offset_right = 776.0
+offset_bottom = 296.0
 text = "YOUR SCORE IS ONE OF THE TEN BEST
 PLEASE ENTER YOUR INITIALS 
 PUSH ROTATE TO SELECT LETTER
 PUSH HYPERSPACE WHEN LETTER IS CORRECT"
+
+[node name="InitialInput" type="LineEdit" parent="UI/HighScores/Initials"]
+layout_mode = 0
+offset_left = 384.0
+offset_top = 576.0
+offset_right = 640.0
+offset_bottom = 640.0
+theme_override_font_sizes/font_size = 42
+placeholder_text = "AAA"
+alignment = 1
+max_length = 3
+flat = true
+caret_blink = true
+caret_force_displayed = true
+
+[node name="Leaderboard" type="Label" parent="UI/HighScores"]
+visible = false
+layout_mode = 0
+offset_left = 320.0
+offset_top = 320.0
+offset_right = 704.0
+offset_bottom = 640.0
+horizontal_alignment = 1
+
+[node name="Label" type="Label" parent="UI/HighScores/Leaderboard"]
+layout_mode = 0
+offset_top = -64.0
+offset_right = 384.0
+theme_override_font_sizes/font_size = 40
+text = "HIGH SCORES"
+horizontal_alignment = 1
+vertical_alignment = 1
 
 [node name="BotScreen" type="Control" parent="UI"]
 layout_mode = 3
@@ -203,3 +238,4 @@ shape = SubResource("RectangleShape2D_nbnup")
 
 [connection signal="pressed" from="UI/ReplayMenu/PlayAgain" to="UI" method="_on_play_again_pressed" flags=18]
 [connection signal="pressed" from="UI/ReplayMenu/Quit" to="UI" method="_on_quit_pressed" flags=18]
+[connection signal="text_submitted" from="UI/HighScores/Initials/InitialInput" to="UI" method="_on_initial_input_text_submitted"]

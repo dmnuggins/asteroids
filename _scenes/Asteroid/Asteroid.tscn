@@ -17,5 +17,4 @@ shape = SubResource("CircleShape2D_5d1jn")
 position = Vector2(1, 0)
 polygon = PackedVector2Array(-14, -8, -14, 7, -7, 14, 3, 14, 12, 8, 9, 0, 12, -7, 6, -13, -1, -8, -5, -14)
 
-[connection signal="area_entered" from="." to="." method="_on_asteroid_area_entered"]
 [connection signal="body_entered" from="." to="." method="_on_asteroid_body_entered"]

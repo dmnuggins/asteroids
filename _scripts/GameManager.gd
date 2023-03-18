@@ -49,7 +49,9 @@ var ast_spawnable = true # true to init asteroids
 # Signals
 signal last_asteroid_destroyed
 
-var player_initials
+var player_initials: String
+var new_score: int
+var new_score_index: int
 
 # Save data
 var highest_scores = []
@@ -72,11 +74,11 @@ func _process(delta):
 		if ast_spawnable && wave != 1 && !bonus:
 			handle_next_wave()
 	
-	if Input.is_action_just_pressed("save"):
-		save_highscore()
+#	if Input.is_action_just_pressed("save"):
+#		save_highscore()
 
-	if Input.is_action_just_pressed("load"):
-		highest_scores = load_highscore()
+#	if Input.is_action_just_pressed("load"):
+#		highest_scores = load_highscore()
 	
 	pass
 
@@ -85,6 +87,7 @@ func connect_signals() -> void:
 	# ui connectors
 	ui.quit.connect(quit_game)
 	ui.play_again.connect(reset_game)
+	ui.initial_submit.connect(set_initials)
 
 #=====SAVE_DATA=====#
 
@@ -96,11 +99,12 @@ func achieved_highscore() -> bool:
 	return false
 
 # returns true if there is a new high score saved
-func save_highscore() -> bool:
+func new_highscore() -> bool:
 	var new_highscore = false
 	# conditinal when there is no save data
-	if highest_scores.size() <= 0:
-		highest_scores.push_front([score, "initials"])
+	if highest_scores.size() <= 1:
+#		highest_scores.push_front([score, "initials"])
+		new_highscore = true
 	else:
 #		highest_scores.reverse() # so array goes from lowest to highest
 		var cur_num
@@ -110,24 +114,32 @@ func save_highscore() -> bool:
 			cur_num = highest_scores[x][0]
 			# check if there is only one value, just add to array if higher
 			if score > cur_num && size <= 1:
+				
 				highest_scores.push_front([score, "initials"])
 				new_highscore = true
+#				new_score_index = 0
 				break
 			# if more than one value
-			elif score >= cur_num && size > 1:
-				highest_scores.insert(x, [score,"initials"])
+			if score >= cur_num && size > 1:
+#				highest_scores.insert(x, [score,"initials"])
 				new_highscore = true
+				new_score_index = x
 				break
 				# check if next number is >=, then push if conditional true
 			else:
 				continue
-		# conditional to truncate top 10 scores
-		if highest_scores.size() > 10:
-			highest_scores.pop_back()
+		
 #	print(highest_scores)
 	return new_highscore
 
 func upload_scores():
+	if highest_scores.size() <= 1:
+		highest_scores.push_front([score,player_initials])
+	else:
+		highest_scores.insert(new_score_index, [score,player_initials])
+	# conditional to truncate top 10 scores
+	if highest_scores.size() > 10:
+		highest_scores.pop_back()
 	var saveFile = FileAccess.open("user://highscores.save", FileAccess.WRITE)
 	for i in highest_scores.size():
 		saveFile.store_line(str(i, ":", highest_scores[i][0], ",",highest_scores[i][1],"\r"))
@@ -155,6 +167,7 @@ func load_highscore():
 	loadFile.close()
 	print(loaded_scores)
 	return loaded_scores
+
 
 #=====SAVE_DATA_END=====#
 
@@ -185,13 +198,14 @@ func load_game() -> void:
 #	ui.load_lives()
 
 func reset_game() -> void:
+	ui.toggle_replay()
+	ui.toggle_leaderboard()
 	GAME_OVER = false
 	clear_screen()
 	player_one_lives = 1
 	score = 0
 	difficulty = 1
 	wave = 1
-	ui.toggle_replay()
 	ui.update_score()
 	ui.load_lives()
 	load_game()
@@ -229,11 +243,22 @@ func quit_game() -> void:
 	get_tree().quit()
 
 func game_over() -> void:
-	if save_highscore():
-		upload_scores()
+	if new_highscore():
+		# Prompt user for for initials
+		ui.toggle_highscores()
+	else:
+		print("NO NEW SCORE")
+		ui.toggle_replay()
 	GAME_OVER = true
-	ui.toggle_replay()
 	
+
+func set_initials(new_text: String) -> void:
+	player_initials = new_text
+	upload_scores()
+	ui.toggle_initials()
+	ui.update_leaderboard(highest_scores)
+	ui.toggle_leaderboard()
+	ui.toggle_replay()
 	
 #=====GAME_FLOW_END=====#
 

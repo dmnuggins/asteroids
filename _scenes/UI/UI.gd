@@ -8,6 +8,7 @@ var p2_num_lives: int
 
 signal play_again
 signal quit
+signal initial_submit
 
 # Called when the node enters the scene tree for the first time.
 func _ready():
@@ -26,6 +27,24 @@ func toggle_replay() -> void:
 	else:
 		$ReplayMenu.show()
 
+func toggle_highscores() -> void:
+	if $HighScores.visible:
+		$HighScores.hide()
+	else:
+		$HighScores.show()
+
+func toggle_initials() -> void:
+	if $HighScores/Initials.visible:
+		$HighScores/Initials.hide()
+	else:
+		$HighScores/Initials.show()
+
+func toggle_leaderboard() -> void:
+	if $HighScores/Leaderboard.visible:
+		$HighScores/Leaderboard.hide()
+	else:
+		$HighScores/Leaderboard.show()
+
 func load_lives() -> void:
 	p1_num_lives = GameManager.player_one_lives
 	p1_ships.size.x = p1_num_lives * 18
@@ -43,10 +62,28 @@ func update_score() -> void:
 func update_highscore() -> void:
 	$TopScreen/Highscore.text = str(GameManager.highscore)
 
+func update_leaderboard(highscores) -> void:
+	var leaderboard: String
+	var score: int
+	var initials: String
+	var rank: int
+	
+	for i in highscores.size():
+		rank = i + 1
+		score = highscores[i][0]
+		initials = highscores[i][1]
+		leaderboard += str(rank," \t ",score," \t ",initials,"\n")
+	$HighScores/Leaderboard.text = leaderboard
+
 func _on_play_again_pressed():
 	emit_signal("play_again")
+#	toggle_initials() # turn back on for next highscore prompt
 	pass # Replace with function body.
 
 func _on_quit_pressed():
 	emit_signal("quit")
+	pass # Replace with function body.
+
+func _on_initial_input_text_submitted(new_text: String):
+	emit_signal("initial_submit", new_text)
 	pass # Replace with function body.
