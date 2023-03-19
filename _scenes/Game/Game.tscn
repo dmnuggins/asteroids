@@ -74,6 +74,7 @@ text = "No Lives left"
 horizontal_alignment = 2
 
 [node name="Ships" type="TextureRect" parent="UI/TopScreen/PlayerOne"]
+visible = false
 layout_mode = 2
 offset_left = -16.0
 offset_top = 48.0
@@ -145,6 +146,17 @@ offset_right = 320.0
 offset_bottom = 30.0
 focus_mode = 0
 text = "QUIT"
+flat = true
+
+[node name="StartGame" type="Button" parent="UI"]
+offset_left = 320.0
+offset_top = 352.0
+offset_right = 704.0
+offset_bottom = 416.0
+focus_mode = 0
+theme = ExtResource("2_foafi")
+theme_override_font_sizes/font_size = 24
+text = "CLICK HERE TO START"
 flat = true
 
 [node name="Inidicators" type="Control" parent="UI"]
@@ -268,4 +280,5 @@ shape = SubResource("RectangleShape2D_nbnup")
 
 [connection signal="pressed" from="UI/ReplayMenu/PlayAgain" to="UI" method="_on_play_again_pressed" flags=18]
 [connection signal="pressed" from="UI/ReplayMenu/Quit" to="UI" method="_on_quit_pressed" flags=18]
+[connection signal="pressed" from="UI/StartGame" to="UI" method="_on_start_game_pressed"]
 [connection signal="text_submitted" from="UI/HighScores/Initials/InitialInput" to="UI" method="_on_initial_input_text_submitted"]

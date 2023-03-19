@@ -9,12 +9,13 @@ var p2_num_lives: int
 signal play_again
 signal quit
 signal initial_submit
+signal start_game
 
 # Called when the node enters the scene tree for the first time.
 func _ready():
 	GameManager.ui = self
-	p1_num_lives = GameManager.player_one_lives
-	load_lives()
+#	p1_num_lives = GameManager.player_one_lives
+#	load_lives()
 	pass # Replace with function body.
 
 # Called every frame. 'delta' is the elapsed time since the previous frame.
@@ -96,4 +97,10 @@ func _on_quit_pressed():
 
 func _on_initial_input_text_submitted(new_text: String):
 	emit_signal("initial_submit", new_text)
+	pass # Replace with function body.
+
+
+func _on_start_game_pressed():
+	emit_signal("start_game")
+	$StartGame.hide()
 	pass # Replace with function body.

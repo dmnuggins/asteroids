@@ -17,8 +17,11 @@ var spawn_follow_path
 var spawn_timer: Timer
 var respawn_timer: Timer
 var next_wave_timer: Timer
+var start_game_timer: Timer
 var next_wave_loadable: bool = false
 var GAME_OVER = false
+var GAME_START = false
+var GAME_PAUSE
 
 # Level scaling
 var wave: int = 1
@@ -60,7 +63,11 @@ signal last_asteroid_destroyed
 
 func _ready():
 	set_references()
-	load_game()
+	for i in 4:
+		spawn_asteroids()
+	init_bonus_spawn_timer()
+	ui.start_game.connect(start_game)
+	ui.start_game.connect(clear_screen)
 
 func _process(delta):
 	
@@ -70,7 +77,10 @@ func _process(delta):
 	# if start game button pressed
 	# run start game (call reset game, hide start button)
 	# set game over false
-	
+#
+	if GAME_START:
+		init_start_game_timer()
+		GAME_START = false
 	
 	if !GAME_OVER: 
 		if next_wave_loadable && wave > 1 && bonus == null:
@@ -176,12 +186,7 @@ func set_references() -> void:
 
 # to-do
 func start_game() -> void:
-	
-	pass
-
-# to-do
-func idle_game() -> void:
-	
+	GAME_START = true
 	pass
 
 # loads game assets & initialize spawners
@@ -192,6 +197,21 @@ func load_game() -> void:
 	spawn_player()
 	bonus_spawn_init()
 	connect_signals()
+
+# initialize game load
+func initial_game() -> void:
+	GAME_OVER = false
+	clear_screen()
+	player_one_lives = 3
+	score = 0
+	difficulty = 1
+	wave = 1
+	to_spawn = difficulty
+#	set_remaining_asteroids()
+	ui.update_score()
+	ui.load_lives()
+	load_game()
+	pass
 
 # reset game
 func reset_game() -> void:
@@ -287,6 +307,15 @@ func set_initials(new_text: String) -> void:
 #=====GAME_FLOW_END=====#
 
 #=====TIMERS=====#
+# delay timer for player after colliding with asteroid
+func init_start_game_timer():
+	print("Initialized respawn timer")
+	start_game_timer = Timer.new()
+	add_child(start_game_timer)
+	start_game_timer.wait_time = 1.0
+	start_game_timer.one_shot = true
+	start_game_timer.start()
+	start_game_timer.timeout.connect(initial_game) # player respawn is called when respawn_timer timeout
 # respawn timer for player after colliding with asteroid
 func init_respawn_timer():
 	print("Initialized respawn timer")
