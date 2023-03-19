@@ -186,6 +186,10 @@ func set_references() -> void:
 
 # to-do
 func start_game() -> void:
+	if bonus != null:
+		bonus.manual_timeout()
+	if bonus_timer != null:
+		bonus_timer.queue_free()
 	GAME_START = true
 	pass
 
@@ -207,7 +211,6 @@ func initial_game() -> void:
 	difficulty = 1
 	wave = 1
 	to_spawn = difficulty
-#	set_remaining_asteroids()
 	ui.update_score()
 	ui.load_lives()
 	load_game()
@@ -463,7 +466,8 @@ func handle_player_destruction() -> void:
 func bonus_shoot() -> void:
 	var sauce_bullet = bullet_prefab.instantiate()
 	# position init
-	sauce_bullet.position = bonus.position
+	if sauce_bullet != null:
+		sauce_bullet.position = bonus.position
 	if player != null:
 		sauce_bullet.look_at(player.global_position)
 		sauce_bullet.rotate(PI/2) # rotation accounted for initial launch vector of bullet
