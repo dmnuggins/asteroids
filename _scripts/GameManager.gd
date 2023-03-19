@@ -16,12 +16,14 @@ var spawn_path
 var spawn_follow_path
 var spawn_timer: Timer
 var respawn_timer: Timer
+var next_wave_timer: Timer
+var next_wave_loadable: bool = false
 var GAME_OVER = false
 
 # Level scaling
 var wave: int = 1
 var difficulty: int = 1
-var to_spawn: int = 3 # number of asteroids to spawn based on difficulty increase
+var to_spawn: int = 1 # number of asteroids to spawn based on difficulty increase
 
 # Save/data vars
 var score: int = 0
@@ -35,8 +37,8 @@ var numba_one: int = 0
 var SAVEFILE = "user://highscores.save"
 
 # Player vars
-var max_lives: int = 3
-var player_one_lives: int = max_lives
+var max_lives: int = 8
+var player_one_lives: int = 3
 var player_timer: Timer
 var player
 var player_spawnable: bool = false
@@ -68,14 +70,18 @@ func _process(delta):
 	# if start game button pressed
 	# run start game (call reset game, hide start button)
 	# set game over false
-
+	
+	
 	if !GAME_OVER: 
-		if bonus_spawnable:
+		if next_wave_loadable && wave > 1 && bonus == null:
+			init_next_wave_timer()
+		if bonus_spawnable && asteroids_remaining > 0:
 			init_bonus_spawn_timer()
+			
+		ui.show_not_clear(level.spawn_clear(),player_spawnable)
 		if player_spawnable && level.spawn_clear():
 			spawn_player()
-		if ast_spawnable && wave != 1 && !bonus:
-			handle_next_wave()
+
 	
 	pass
 
@@ -181,11 +187,10 @@ func idle_game() -> void:
 # loads game assets & initialize spawners
 func load_game() -> void:
 	highest_scores = load_highscore()
-	spawn_asteroids(3)
-	set_remaining_asteroids()
-	bonus_spawn_init() # reset flag so bonus can spaw
+	spawn_asteroids()
 	player_spawn_init()
 	spawn_player()
+	bonus_spawn_init()
 	connect_signals()
 
 # reset game
@@ -206,8 +211,8 @@ func reset_game() -> void:
 	score = 0
 	difficulty = 1
 	wave = 1
-	to_spawn = 3
-	set_remaining_asteroids()
+	to_spawn = difficulty
+#	set_remaining_asteroids()
 	ui.update_score()
 	ui.load_lives()
 	load_game()
@@ -234,8 +239,19 @@ func clear_asteroids() -> void:
 
 # spawns next wave of asteroids
 func handle_next_wave() -> void:
-	spawn_asteroids(3)
-	set_remaining_asteroids()
+	difficulty += 1
+	wave += 1
+	to_spawn = difficulty
+	print("next wave handled")
+	if bonus != null:
+		print("bonus timeout")
+		bonus.manual_timeout()
+		bonus_spawnable = false
+	if player_one_lives <= max_lives:
+		player_one_lives += 1
+	ui.load_lives()
+	next_wave_init()
+	
 
 func set_remaining_asteroids() -> void:
 	asteroids_remaining = to_spawn * 7
@@ -272,16 +288,6 @@ func set_initials(new_text: String) -> void:
 
 #=====TIMERS=====#
 # respawn timer for player after colliding with asteroid
-func init_asteroid_timer():
-	print("Initialized asteroid timer")
-	asteroids_timer = Timer.new()
-	add_child(asteroids_timer)
-	asteroids_timer.wait_time = 3.0
-	asteroids_timer.one_shot = true
-	asteroids_timer.start()
-	asteroids_timer.timeout.connect(ast_spawn_init) # player respawn is called when respawn_timer timeout
-
-# respawn timer for player after colliding with asteroid
 func init_respawn_timer():
 	print("Initialized respawn timer")
 	respawn_timer = Timer.new()
@@ -293,14 +299,29 @@ func init_respawn_timer():
 
 # bonus spawn timer
 func init_bonus_spawn_timer() -> void:
-	print("Initialized bonus spawn timer")
 	bonus_spawnable = false
+	print("Initialized bonus spawn timer")
 	bonus_timer = Timer.new()
 	add_child(bonus_timer)
 	bonus_timer.wait_time = 5.0
 	bonus_timer. one_shot = true
 	bonus_timer.start()
 	bonus_timer.timeout.connect(spawn_bonus) # bonus spawner is called when bonus_timer timeout
+
+# next_wave timer
+func init_next_wave_timer() -> void:
+	print("Initialized next wave spawn timer")
+	next_wave_loadable = false
+	next_wave_timer = Timer.new()
+	add_child(next_wave_timer)
+	next_wave_timer.wait_time = 5.0
+	next_wave_timer. one_shot = true
+	next_wave_timer.start()
+	next_wave_timer.timeout.connect(spawn_asteroids) # bonus spawner is called when bonus_timer timeout
+	next_wave_timer.timeout.connect(bonus_spawn_init)
+	
+func next_wave_init() -> void:
+	next_wave_loadable = true
 #=====TIMERS END=====#
 
 #=====SPAWNERS=====#
@@ -326,7 +347,7 @@ func spawn_player() -> void:
 	player_spawnable = false
 
 func spawn_bonus() -> void:
-	if bonus_timer:
+	if bonus_timer != null:
 		bonus_timer.queue_free()
 	print("Bonus spawned")
 	bonus = bonus_prefab.instantiate()
@@ -337,25 +358,19 @@ func spawn_bonus() -> void:
 	bonus.saucer_shoot.connect(bonus_shoot)
 	bonus.saucer_hit.connect(handle_bonus_destruction)
 	bonus.saucer_timeout.connect(handle_bonus_timeout)
+	bonus_spawnable = false
 
 # spawn asteroids given size and number
-func spawn_asteroids(size: int) -> void:
+func spawn_asteroids() -> void:
+		
 	# removes timer spawn timer
 	if asteroids_timer != null:
 		asteroids_timer.queue_free()
-	if size == 3:
-		for i in to_spawn:
+	for i in to_spawn:
 			asteroid = lrg_asteroid_scene.instantiate()
 			add_asteroids(random_position())
-	elif size == 2:
-		for i in to_spawn:
-			asteroid = med_asteroid_scene.instantiate()
-			add_asteroids(random_position())
-	elif size == 1:
-		for i in to_spawn:
-			asteroid = sml_asteroid_scene.instantiate()
-			add_asteroids(random_position())
-	ast_spawnable = false
+	next_wave_loadable = false
+	set_remaining_asteroids()
 	
 # adds asteroids to scene
 func add_asteroids(position: Vector2) -> void:
@@ -367,8 +382,9 @@ func add_asteroids(position: Vector2) -> void:
 #=====DESPAWN=====#
 func handle_asteroid_destruction(size: int, velocity: Vector2, ast_position: Vector2, value: int) -> void:
 	score += value
-#	print(asteroids_remaining)
+	print(asteroids_remaining)
 	asteroids_remaining -= 1
+	
 	ui.update_score()
 	# get asteroid last position
 	if size == 3:
@@ -376,11 +392,9 @@ func handle_asteroid_destruction(size: int, velocity: Vector2, ast_position: Vec
 	elif size == 2:
 		split_asteroids(size, velocity, ast_position)
 	# spawn next set of asteroids based on size
-	if asteroids_remaining == 0:
-		init_asteroid_timer()
-		difficulty += 1
-		wave += 1
-		to_spawn = difficulty + 3
+	if asteroids_remaining <= 0:
+		emit_signal("last_asteroid_destroyed")
+		handle_next_wave()
 
 # splits asteroids into smaller asteroids given size and instances given velocity and position
 func split_asteroids(size: int, velocity: Vector2, ast_position: Vector2) -> void:
@@ -404,7 +418,8 @@ func handle_bonus_destruction(value: int) -> void:
 	ui.update_score()
 
 func handle_bonus_timeout() -> void:
-	bonus_spawn_init()
+	if asteroids_remaining >= 0 && !next_wave_loadable:
+		bonus_spawn_init()
 	pass
 
 func handle_player_destruction() -> void:

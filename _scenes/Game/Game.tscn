@@ -147,6 +147,22 @@ focus_mode = 0
 text = "QUIT"
 flat = true
 
+[node name="Inidicators" type="Control" parent="UI"]
+layout_mode = 3
+anchors_preset = 0
+offset_right = 40.0
+offset_bottom = 40.0
+
+[node name="Label" type="Label" parent="UI/Inidicators"]
+visible = false
+layout_mode = 0
+offset_left = 384.0
+offset_top = 360.0
+offset_right = 640.0
+offset_bottom = 386.0
+text = "SPAWN ZONE NOT CLEAR"
+horizontal_alignment = 1
+
 [node name="HighScores" type="Control" parent="UI"]
 visible = false
 layout_mode = 3

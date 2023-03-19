@@ -21,6 +21,13 @@ func _ready():
 func _process(delta):
 	pass
 
+func show_not_clear(clear: bool, player_spawnable: bool) -> void:
+	if player_spawnable:
+		if  clear:
+			$Inidicators/Label.visible = false
+		else:
+			$Inidicators/Label.visible = true
+
 func toggle_replay() -> void:
 	if $ReplayMenu.visible:
 		$ReplayMenu.hide()

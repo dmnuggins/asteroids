@@ -57,6 +57,10 @@ func destroy_saucer() -> void:
 func warp_saucer() -> void:
 	queue_free()
 
+func manual_timeout() -> void:
+	$LifeTimer.stop()
+	eol = true
+
 #=====CONNECTED FUNCTIONS=====#
 
 func _on_flying_saucer_body_entered(body):
@@ -75,12 +79,9 @@ func _on_shoot_timer_timeout():
 
 func _on_area_entered(area):
 	if(area.is_in_group("bounds")) && eol:
-		print("Bound enetered")
 		warp_saucer()
 		emit_signal("saucer_timeout")
-	pass # Replace with function body.
 
 # timeout changes the direction of the bonus ship
 func _on_dir_timer_timeout():
 	change_dir()
-	pass # Replace with function body.
