@@ -270,6 +270,8 @@ func handle_next_wave() -> void:
 		print("bonus timeout")
 		bonus.manual_timeout()
 		bonus_spawnable = false
+	if bonus_timer != null:
+		bonus_timer.queue_free()
 	if player_one_lives <= max_lives:
 		player_one_lives += 1
 	ui.load_lives()
@@ -335,7 +337,7 @@ func init_bonus_spawn_timer() -> void:
 	print("Initialized bonus spawn timer")
 	bonus_timer = Timer.new()
 	add_child(bonus_timer)
-	bonus_timer.wait_time = 5.0
+	bonus_timer.wait_time = 15.0
 	bonus_timer. one_shot = true
 	bonus_timer.start()
 	bonus_timer.timeout.connect(spawn_bonus) # bonus spawner is called when bonus_timer timeout
