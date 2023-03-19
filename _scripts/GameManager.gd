@@ -21,7 +21,7 @@ var start_game_timer: Timer
 var next_wave_loadable: bool = false
 var GAME_OVER = false
 var GAME_START = false
-var GAME_PAUSE
+var GAME_PAUSE = false
 
 # Level scaling
 var wave: int = 1
@@ -197,6 +197,7 @@ func start_game() -> void:
 func load_game() -> void:
 	highest_scores = load_highscore()
 	spawn_asteroids()
+	set_remaining_asteroids()
 	player_spawn_init()
 	spawn_player()
 	bonus_spawn_init()
@@ -235,7 +236,6 @@ func reset_game() -> void:
 	difficulty = 1
 	wave = 1
 	to_spawn = difficulty
-#	set_remaining_asteroids()
 	ui.update_score()
 	ui.load_lives()
 	load_game()
@@ -315,6 +315,8 @@ func set_initials(new_text: String) -> void:
 # delay timer for player after colliding with asteroid
 func init_start_game_timer():
 	print("Initialized respawn timer")
+	ui.update_wave_label(wave)
+	ui.toggle_wave_label()
 	start_game_timer = Timer.new()
 	add_child(start_game_timer)
 	start_game_timer.wait_time = 1.0
@@ -345,6 +347,8 @@ func init_bonus_spawn_timer() -> void:
 # next_wave timer
 func init_next_wave_timer() -> void:
 	print("Initialized next wave spawn timer")
+	ui.update_wave_label(wave)
+	ui.toggle_wave_label()
 	next_wave_loadable = false
 	next_wave_timer = Timer.new()
 	add_child(next_wave_timer)
@@ -396,7 +400,7 @@ func spawn_bonus() -> void:
 
 # spawn asteroids given size and number
 func spawn_asteroids() -> void:
-		
+	ui.toggle_wave_label()
 	# removes timer spawn timer
 	if asteroids_timer != null:
 		asteroids_timer.queue_free()

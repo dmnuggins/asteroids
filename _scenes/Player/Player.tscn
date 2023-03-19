@@ -16,3 +16,8 @@ polygon = PackedVector2Array(0, -17, -12, 16, 0, 12, 12, 16)
 
 [node name="Gun" type="Node2D" parent="."]
 position = Vector2(0, -21)
+
+[node name="WarpTimer" type="Timer" parent="."]
+one_shot = true
+
+[connection signal="timeout" from="WarpTimer" to="." method="_on_warp_timer_timeout"]

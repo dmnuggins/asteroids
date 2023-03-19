@@ -1,15 +1,19 @@
-[gd_scene load_steps=11 format=3 uid="uid://bm7o5d8v5ttm1"]
+[gd_scene load_steps=13 format=3 uid="uid://bm7o5d8v5ttm1"]
 
 [ext_resource type="Script" path="res://_scenes/Game/Game.gd" id="1_rnyc1"]
 [ext_resource type="Script" path="res://_scenes/UI/UI.gd" id="2_cemqf"]
 [ext_resource type="Theme" uid="uid://dhir0viowmptm" path="res://_assets/themes/UI.tres" id="2_foafi"]
 [ext_resource type="Texture2D" uid="uid://di567tx33q3x5" path="res://_assets/images/asteroids_player_ship.png" id="3_7xbpe"]
+[ext_resource type="FontFile" uid="uid://swu2ueyc7axk" path="res://_assets/fonts/VectorBattle-e9XO.ttf" id="5_f5lju"]
 
 [sub_resource type="Curve2D" id="Curve2D_2r42g"]
 _data = {
 "points": PackedVector2Array(0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 1024, 0, 0, 0, 0, 0, 1024, 768, 0, 0, 0, 0, 0, 768, 0, 0, 0, 0, 0, 0)
 }
 point_count = 5
+
+[sub_resource type="Theme" id="Theme_is2ph"]
+default_font = ExtResource("5_f5lju")
 
 [sub_resource type="RectangleShape2D" id="RectangleShape2D_i5xyd"]
 size = Vector2(256, 256)
@@ -164,8 +168,9 @@ layout_mode = 3
 anchors_preset = 0
 offset_right = 40.0
 offset_bottom = 40.0
+theme = SubResource("Theme_is2ph")
 
-[node name="Label" type="Label" parent="UI/Inidicators"]
+[node name="SpawnClear" type="Label" parent="UI/Inidicators"]
 visible = false
 layout_mode = 0
 offset_left = 384.0
@@ -173,6 +178,17 @@ offset_top = 360.0
 offset_right = 640.0
 offset_bottom = 386.0
 text = "SPAWN ZONE NOT CLEAR"
+horizontal_alignment = 1
+
+[node name="WaveLabel" type="Label" parent="UI/Inidicators"]
+visible = false
+layout_mode = 0
+offset_left = 384.0
+offset_top = 224.0
+offset_right = 640.0
+offset_bottom = 256.0
+theme_override_font_sizes/font_size = 24
+text = "WAVE 1"
 horizontal_alignment = 1
 
 [node name="HighScores" type="Control" parent="UI"]

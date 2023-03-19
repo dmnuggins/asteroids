@@ -25,9 +25,18 @@ func _process(delta):
 func show_not_clear(clear: bool, player_spawnable: bool) -> void:
 	if player_spawnable:
 		if  clear:
-			$Inidicators/Label.visible = false
+			$Inidicators/SpawnClear.visible = false
 		else:
-			$Inidicators/Label.visible = true
+			$Inidicators/SpawnClear.visible = true
+
+func toggle_wave_label() -> void:
+	if $Inidicators/WaveLabel.visible:
+		$Inidicators/WaveLabel.hide()
+	else:
+		$Inidicators/WaveLabel.show()
+
+func update_wave_label(wave_num: int) -> void:
+	$Inidicators/WaveLabel.text = str("WAVE ",wave_num)
 
 func toggle_replay() -> void:
 	if $ReplayMenu.visible:
@@ -56,7 +65,7 @@ func toggle_leaderboard() -> void:
 func load_lives() -> void:
 	p1_num_lives = GameManager.player_one_lives
 	p1_ships.size.x = p1_num_lives * 18
-	p1_ships.position.x = (GameManager.max_lives - p1_num_lives - 1) * 18
+	p1_ships.position.x = (GameManager.max_lives - p1_num_lives - 4) * 18
 	if p1_num_lives <= 0:
 		p1_ships.hide()
 		$TopScreen/PlayerOne/NoLives.show()
