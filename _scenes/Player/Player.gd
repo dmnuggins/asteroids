@@ -63,12 +63,10 @@ func destroy_player() -> void:
 	# yeeted the player out of screen to avoid multiple collisions
 	# funny, so not optimal
 	global_position = Vector2(-100, -100)
-	$CollisionShape2D.disabled = true
+	$CollisionShape2D.queue_free()
 	emit_signal("player_hit")
 	get_node("Explosion").play()
 	get_node("DespawnTimer").start()
-	collision_layer = 3
-	collision_mask = 3
 	hide()
 	
 

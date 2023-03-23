@@ -34,7 +34,7 @@ position = Vector2(2.38419e-07, 19)
 scale = Vector2(0.511719, 0.511719)
 sprite_frames = SubResource("SpriteFrames_xi8vb")
 animation = &"thrust"
-frame_progress = 0.248009
+frame_progress = 0.0251539
 
 [node name="Polygon2D" type="Polygon2D" parent="."]
 polygon = PackedVector2Array(0, -17, -12, 16, 0, 12, 12, 16)
