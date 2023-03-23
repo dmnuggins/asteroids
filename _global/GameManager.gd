@@ -71,18 +71,15 @@ func _ready():
 
 func _process(delta):
 	
-	# check if game idle
-	# spawn idle elements (not player)
-	
-	# if start game button pressed
-	# run start game (call reset game, hide start button)
-	# set game over false
 #
 	if GAME_START:
 		init_start_game_timer()
 		GAME_START = false
 	
 	if !GAME_OVER: 
+		
+		
+		
 		if next_wave_loadable && wave > 1 && bonus == null:
 			init_next_wave_timer()
 		if bonus_spawnable && asteroids_remaining > 0:
@@ -118,14 +115,13 @@ func new_highscore() -> bool:
 		for x in size:
 			cur_num = highest_scores[x][0]
 			# check if there is only one value, just add to array if higher
-			if score > cur_num && size <= 1:
-				
+			if score > cur_num && size < 1:
 #				highest_scores.push_front([score, "initials"])
 				new_highscore = true
 #				new_score_index = 0
 				break
 			# if more than one value
-			if score >= cur_num && size > 1:
+			if score >= cur_num && size >= 1:
 #				highest_scores.insert(x, [score,"initials"])
 				new_highscore = true
 				new_score_index = x
@@ -287,6 +283,7 @@ func quit_game() -> void:
 
 # handle game over state
 func game_over() -> void:
+	GAME_OVER = true
 	if new_highscore():
 		print("NEW HIGH SCORE")
 		# Prompt user for for initials
@@ -296,7 +293,7 @@ func game_over() -> void:
 		high_flag = false
 		print("NO NEW SCORE")
 		ui.toggle_replay()
-	GAME_OVER = true
+	
 	
 
 # get initals, update temp array of high scores, upload new high scores (may rename func to something more suitable)
@@ -328,7 +325,7 @@ func init_respawn_timer():
 	print("Initialized respawn timer")
 	respawn_timer = Timer.new()
 	add_child(respawn_timer)
-	respawn_timer.wait_time = 2.0
+	respawn_timer.wait_time = 1.0
 	respawn_timer.one_shot = true
 	respawn_timer.start()
 	respawn_timer.timeout.connect(player_spawn_init) # player respawn is called when respawn_timer timeout
@@ -379,8 +376,9 @@ func spawn_player() -> void:
 		respawn_timer.queue_free()
 	player = player_prefab.instantiate()
 	player.position = level.get_node("PlayerSpawn").position
-	player.player_hit.connect(init_respawn_timer)
+	player.player_destroyed.connect(init_respawn_timer)
 	player.player_hit.connect(handle_player_destruction)
+	player.player_shoot.connect(player_shoot)
 	level.add_child(player)
 	player_spawnable = false
 
@@ -463,9 +461,19 @@ func handle_bonus_timeout() -> void:
 func handle_player_destruction() -> void:
 	player_one_lives -= 1
 	ui.load_lives()
-	if player_one_lives < 0:
+	if player_one_lives <= 0:
 		game_over()
 #=====DESPAWN END=====#
+
+#=====PLAYER=====#
+
+func player_shoot() -> void:
+	var new_bullet = bullet_prefab.instantiate()
+	new_bullet.position = player.get_gun_position() 
+	new_bullet.rotation = player.rotation
+	add_child(new_bullet)
+
+#=====PLAYER_END=====#
 
 #=====BONUS=====#
 # shoots bullet from saucer when called

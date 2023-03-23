@@ -1,6 +1,7 @@
-[gd_scene load_steps=3 format=3 uid="uid://cf15nqu68n0ct"]
+[gd_scene load_steps=4 format=3 uid="uid://cf15nqu68n0ct"]
 
 [ext_resource type="Script" path="res://_scenes/Asteroid/Asteroid.gd" id="1_t1vh1"]
+[ext_resource type="AudioStream" uid="uid://bmsewfq6ubp48" path="res://_assets/audio/sfx/asteroid_explosion.wav" id="2_axmb0"]
 
 [sub_resource type="CircleShape2D" id="CircleShape2D_5d1jn"]
 radius = 15.0
@@ -17,4 +18,13 @@ shape = SubResource("CircleShape2D_5d1jn")
 position = Vector2(1, 0)
 polygon = PackedVector2Array(-14, -8, -14, 7, -7, 14, 3, 14, 12, 8, 9, 0, 12, -7, 6, -13, -1, -8, -5, -14)
 
+[node name="Break" type="AudioStreamPlayer" parent="."]
+stream = ExtResource("2_axmb0")
+
+[node name="DespawnTimer" type="Timer" parent="."]
+wait_time = 2.0
+one_shot = true
+
 [connection signal="body_entered" from="." to="." method="_on_asteroid_body_entered"]
+[connection signal="finished" from="Break" to="." method="_on_break_finished"]
+[connection signal="timeout" from="DespawnTimer" to="." method="_on_despawn_timer_timeout"]

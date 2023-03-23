@@ -50,9 +50,12 @@ func screen_wrap() -> void:
 	position = position.posmodv(screen_size)
 
 func destroy_saucer() -> void:
+	$Explosion.play()
+	hide()
+	self.collision_mask = 2
+	self.collision_layer = 2
 	emit_signal("saucer_hit", value)
 	print("SAUCER: hit")
-	queue_free()
 
 func warp_saucer() -> void:
 	queue_free()
@@ -75,6 +78,7 @@ func _on_life_timeout():
 	print("BONUS: EOL")
 
 func _on_shoot_timer_timeout():
+	$Shoot.play()
 	emit_signal("saucer_shoot")
 
 func _on_area_entered(area):
@@ -85,3 +89,8 @@ func _on_area_entered(area):
 # timeout changes the direction of the bonus ship
 func _on_dir_timer_timeout():
 	change_dir()
+
+
+func _on_explosion_finished():
+	queue_free()
+	pass # Replace with function body.

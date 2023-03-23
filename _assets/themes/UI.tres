@@ -1,6 +1,6 @@
 [gd_resource type="Theme" load_steps=2 format=3 uid="uid://dhir0viowmptm"]
 
-[ext_resource type="FontFile" uid="uid://swu2ueyc7axk" path="res://_assets/fonts/VectorBattle-e9XO.ttf" id="1_0fy7s"]
+[ext_resource type="FontFile" uid="uid://cdpxggxh0i3hl" path="res://_assets/fonts/AlphaProta.ttf" id="1_bq305"]
 
 [resource]
-default_font = ExtResource("1_0fy7s")
+default_font = ExtResource("1_bq305")

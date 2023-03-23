@@ -139,7 +139,7 @@ offset_top = -30.0
 offset_right = 320.0
 offset_bottom = -2.0
 focus_mode = 0
-text = "PLAY AGAIN?"
+text = "PLAY AGAIN"
 flat = true
 
 [node name="Quit" type="Button" parent="UI/ReplayMenu"]
@@ -253,13 +253,13 @@ offset_right = 1024.0
 offset_bottom = 768.0
 theme = ExtResource("2_foafi")
 
-[node name="Label" type="Label" parent="UI/BotScreen"]
+[node name="Copyright" type="Label" parent="UI/BotScreen"]
 layout_mode = 0
 offset_left = 360.0
 offset_top = 32.0
 offset_right = 664.0
 offset_bottom = 55.0
-theme_override_font_sizes/font_size = 12
+theme_override_font_sizes/font_size = 14
 text = "© 2023 Dylan Nguyen"
 horizontal_alignment = 1
 vertical_alignment = 1

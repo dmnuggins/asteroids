@@ -1,6 +1,8 @@
-[gd_scene load_steps=3 format=3 uid="uid://dkk4xuh7t85xq"]
+[gd_scene load_steps=5 format=3 uid="uid://dkk4xuh7t85xq"]
 
 [ext_resource type="Script" path="res://_scenes/FlyingSaucer/FlyingSaucer.gd" id="1_dj38u"]
+[ext_resource type="AudioStream" uid="uid://dlpwc7j70ul44" path="res://_assets/audio/sfx/bonus_laser_shoot.wav" id="2_m2ron"]
+[ext_resource type="AudioStream" uid="uid://dmavxf7ncgnnl" path="res://_assets/audio/sfx/bonus_explosion.wav" id="3_s20gf"]
 
 [sub_resource type="RectangleShape2D" id="RectangleShape2D_l0s1t"]
 size = Vector2(60, 30)
@@ -30,8 +32,15 @@ autostart = true
 wait_time = 3.0
 autostart = true
 
+[node name="Shoot" type="AudioStreamPlayer" parent="."]
+stream = ExtResource("2_m2ron")
+
+[node name="Explosion" type="AudioStreamPlayer" parent="."]
+stream = ExtResource("3_s20gf")
+
 [connection signal="area_entered" from="." to="." method="_on_area_entered"]
 [connection signal="body_entered" from="." to="." method="_on_flying_saucer_body_entered"]
 [connection signal="timeout" from="ShootTimer" to="." method="_on_shoot_timer_timeout"]
 [connection signal="timeout" from="LifeTimer" to="." method="_on_life_timeout"]
 [connection signal="timeout" from="DirTimer" to="." method="_on_dir_timer_timeout"]
+[connection signal="finished" from="Explosion" to="." method="_on_explosion_finished"]

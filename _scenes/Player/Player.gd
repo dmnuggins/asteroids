@@ -11,6 +11,8 @@ var rotation_direction = 0
 var warped = false
 
 signal player_hit
+signal player_shoot
+signal player_destroyed
 
 # Called when the node enters the scene tree for the first time.
 func _ready():
@@ -26,9 +28,20 @@ func _process(delta):
 	
 	if Input.is_action_pressed("thrust"):
 		velocity = lerp(velocity, transform.y * -speed, accel * delta)
+		$AnimatedSprite2D.show()
+		$AnimatedSprite2D.play()
+	else:
+		$AnimatedSprite2D.hide()
+		$AnimatedSprite2D.stop()
 	
 	move_and_slide()
 	velocity = lerp(velocity, Vector2.ZERO, decel * delta)
+	
+	if Input.is_action_just_pressed("shoot"):
+		# shoots bullets
+		print("player_shot")
+		get_node("Shoot").play()
+		emit_signal("player_shoot")
 	
 	if Input.is_action_just_pressed("hyperspace"):
 		teleport()
@@ -47,8 +60,17 @@ func teleport() -> void:
 
 # called in Asteroid
 func destroy_player() -> void:
+	# yeeted the player out of screen to avoid multiple collisions
+	# funny, so not optimal
+	global_position = Vector2(-100, -100)
+	$CollisionShape2D.disabled = true
 	emit_signal("player_hit")
-	queue_free()
+	get_node("Explosion").play()
+	get_node("DespawnTimer").start()
+	collision_layer = 3
+	collision_mask = 3
+	hide()
+	
 
 # gets position of gun
 func get_gun_position() -> Vector2:
@@ -63,4 +85,10 @@ func screen_wrap() -> void:
 func _on_warp_timer_timeout():
 	show()
 	warped = false
+	pass # Replace with function body.
+
+
+func _on_despawn_timer_timeout():
+	emit_signal("player_destroyed")
+	queue_free()
 	pass # Replace with function body.
