@@ -1,8 +1,6 @@
 # Asteroids
 
-Game #4 of 20 for the 20-in-30 challenge.
-
-Implemented a singelton pattern to manage game loop and logic between scenes.
+A retro recreation of the 1979 classic, Asteroids, released by Atari. Implemented a singelton pattern to manage game loop and logic between scenes. Provided an option for players to save their high score on the top 10 list post-game. Learned sound design to create feedback sounds to immerse player in experience.
 
 ## Screenshots
 ![Desktop Screenshot 2023 03 22 - 23 15 14 53](https://user-images.githubusercontent.com/7257923/227120034-7a4b597a-521c-4782-a833-24b94415229b.png)
